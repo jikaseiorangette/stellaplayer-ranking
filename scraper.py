@@ -68,21 +68,34 @@ def load_products_csv(path="data/products.csv"):
 
 def update_products_csv(new_items, path="data/products.csv"):
     """
-    ランキングに登場した作品がCSVになければ追記する
-    （GraphQLから取れる範囲の情報のみ）
+    ①ランキング登場作品をCSVに追記
+    ②ランキング登場＝配信済みなのでPREORDER→ON_SALEに自動更新
     """
     if not os.path.exists(path):
         return
-    existing_ids = set()
+    # ランキング登場作品のIDセット
+    ranked_ids = {str(it.get("product_id","")) for it in new_items if it.get("product_id")}
+
     rows = []
+    fieldnames = None
+    added = 0
+    updated = 0
+    existing_ids = set()
+
     with open(path, encoding="utf-8-sig") as f:
         reader = csv.DictReader(f)
         fieldnames = reader.fieldnames
         for row in reader:
+            pid = str(row.get("id","")).strip()
+            existing_ids.add(pid)
+            # PREORDERがランキングに登場していたらON_SALEに更新
+            if pid in ranked_ids and row.get("販売ステータス") == "PREORDER":
+                row["販売ステータス"] = "ON_SALE"
+                updated += 1
+                print(f"  ステータス更新: {row.get('タイトル','')[:30]} PREORDER→ON_SALE")
             rows.append(row)
-            existing_ids.add(str(row.get("id","")).strip())
 
-    added = 0
+    # 新作を追記
     for it in new_items:
         pid = str(it.get("product_id",""))
         if pid and pid not in existing_ids:
@@ -99,12 +112,13 @@ def update_products_csv(new_items, path="data/products.csv"):
             existing_ids.add(pid)
             added += 1
 
-    if added > 0:
+    if added > 0 or updated > 0:
         with open(path, "w", encoding="utf-8-sig", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(rows)
-        print(f"  CSV更新: {added}件追記")
+        if added: print(f"  CSV追記: {added}件")
+        if updated: print(f"  CSV更新: {updated}件(PREORDER→ON_SALE)")
 
 # ===== スクレイピング =====
 
@@ -317,7 +331,13 @@ def main():
                 "has_bonus": row.get("オリジナル特典","") == "True",
             })
     preorders.sort(key=lambda x: x["release_date"])
-    output = {"updated": now_str, "total_products": len(products_csv), "preorders": preorders, "categories": categories}
+    # 2026年発売・配信済み作品数を集計
+    count_2026 = sum(
+        1 for row in products_csv.values()
+        if row.get("販売ステータス") == "ON_SALE"
+        and str(row.get("発売日","")).startswith("2026")
+    )
+    output = {"updated": now_str, "total_products": count_2026, "preorders": preorders, "categories": categories}
     os.makedirs("data", exist_ok=True)
     with open("data/ranking.json", "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
