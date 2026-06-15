@@ -1,9 +1,9 @@
 """
 ステラプレイヤー ランキングスクレイパー
-GraphQLレスポンスをインターセプトして全フィールド取得
+- 正確なGraphQLクエリ + genres フィールドで一括取得
 """
 
-import json, os, re
+import json, os, re, time
 from datetime import datetime, timezone, timedelta
 from playwright.sync_api import sync_playwright
 
@@ -25,67 +25,81 @@ def load_prev(path="data/ranking.json"):
     return prev
 
 def extract_cv_from_title(title):
-    """タイトルから（CV：xxx）を抽出"""
     m = re.search(r'[（(]CV[：:]\s*([^）)]+)[）)]', title)
     return m.group(1).strip() if m else ""
+
+def fetch_ranking(page):
+    """GraphQL APIを直接呼び出してランキング+ジャンルを一括取得"""
+    result = page.evaluate("""
+        async () => {
+            const res = await fetch('https://api.stellaplayer.jp/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Origin': 'https://www.stellaplayer.jp',
+                    'Referer': 'https://www.stellaplayer.jp/',
+                },
+                body: JSON.stringify({
+                    operationName: 'rankingPageRank',
+                    query: `query rankingPageRank($rankType: RankType!, $take: Int!) {
+  GIRLS: ranks(filter: {rank_type: $rankType, top_category: GIRLS, take: $take}) {
+    id rank product {
+      id name release_schedule publish_starts_at
+      converted_featured_images is_new is_online_only
+      brand { id name }
+      genres { id name }
+    }
+  }
+  BL: ranks(filter: {rank_type: $rankType, top_category: BL, take: $take}) {
+    id rank product {
+      id name release_schedule publish_starts_at
+      converted_featured_images is_new is_online_only
+      brand { id name }
+      genres { id name }
+    }
+  }
+}`,
+                    variables: {rankType: 'DAILY', take: 10}
+                })
+            });
+            return res.json();
+        }
+    """)
+    return result
 
 def extract_items(raw_list, prev_cat):
     items = []
     for entry in (raw_list or []):
         p = entry.get("product") or {}
 
-        # タイトル
-        title_raw = p.get("name") or p.get("title") or ""
-
-        # 声優：タイトルの（CV：xxx）から抽出
+        title_raw = p.get("name") or ""
         cv = extract_cv_from_title(title_raw)
-
-        # タイトルからCV表記を除去
         title = re.sub(r'\s*[（(]CV[：:][^）)]+[）)]\s*', '', title_raw).strip()
 
-        # サークル
-        circle = ""
-        maker = p.get("maker") or p.get("circle") or p.get("brand") or {}
-        if isinstance(maker, dict):
-            circle = maker.get("name", "")
-        elif isinstance(maker, str):
-            circle = maker
+        # サークル（brand.name）
+        brand = p.get("brand") or {}
+        circle = brand.get("name", "") if isinstance(brand, dict) else ""
 
-        # サムネイル: converted_featured_images の 800x800_png を優先
+        # サムネイル
         img = ""
         cfi = p.get("converted_featured_images") or {}
         if isinstance(cfi, dict):
             img = (cfi.get("800x800_png") or cfi.get("200x200_png") or
-                   cfi.get("main") or next(iter(cfi.values()), ""))
-        if not img:
-            for key in ["thumbnailUrl","thumbnail","image","imageUrl","coverUrl","jacket"]:
-                if p.get(key):
-                    val = p[key]
-                    img = val.get("url","") if isinstance(val,dict) else str(val)
-                    if img: break
+                   next(iter(cfi.values()), ""))
 
         # 発売日
         release = ""
-        rs = p.get("release_schedule") or p.get("releaseDate") or p.get("publish_starts_at") or ""
-        if rs:
-            release = str(rs)[:10].replace(" ","T").split("T")[0]
-
-        # タグ
-        tags = []
-        for key in ["tags","genres","genre","keywords"]:
+        for key in ["release_schedule", "publish_starts_at"]:
             if p.get(key):
-                val = p[key]
-                if isinstance(val, list):
-                    tags = [v.get("name",str(v)) if isinstance(v,dict) else str(v) for v in val]
-                elif isinstance(val, str):
-                    tags = [t.strip() for t in val.split(",")]
-                if tags: break
+                release = str(p[key])[:10].split("T")[0].split(" ")[0]
+                break
 
-        # リンク
-        link = p.get("url") or p.get("link") or ""
-        if link and not link.startswith("http"):
-            link = "https://www.stellaplayer.jp" + link
+        # ジャンル（genres フィールド）
+        genres_raw = p.get("genres") or []
+        tags = [g.get("name", "") for g in genres_raw if isinstance(g, dict) and g.get("name")]
 
+        product_id = str(p.get("id") or "")
+        link = f"https://www.stellaplayer.jp/product/{product_id}" if product_id else ""
         rank = int(entry.get("rank") or 0)
 
         if title:
@@ -96,7 +110,7 @@ def extract_items(raw_list, prev_cat):
                 "cv": cv,
                 "img": img,
                 "release_date": release,
-                "tags": [str(t) for t in tags][:8],
+                "tags": tags[:8],
                 "link": link,
                 "prev_rank": prev_cat.get(title),
                 "history": [],
@@ -107,7 +121,6 @@ def extract_items(raw_list, prev_cat):
 
 def scrape(prev):
     results = {}
-    captured = {}
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -116,44 +129,80 @@ def scrape(prev):
             "AppleWebKit/537.36 (KHTML, like Gecko) "
             "Chrome/124.0.0.0 Safari/537.36"
         ))
-
-        def handle_response(response):
-            try:
-                if "graphql" in response.url and response.status == 200:
-                    body = response.json()
-                    data = body.get("data", {})
-                    # GIRLS/BL/GENERAL が含まれる応答を優先キャプチャ
-                    for cat in ["GIRLS", "BL", "GENERAL"]:
-                        if cat in data and data[cat] and cat not in captured:
-                            captured[cat] = data[cat]
-                            print(f"  📦 {cat}: {len(data[cat])}件キャプチャ")
-            except Exception:
-                pass
-
         page = context.new_page()
-        page.on("response", handle_response)
 
-        for cat_url, cat_key in [
-            ("https://www.stellaplayer.jp/ranking/GIRLS?rank_type=DAILY", "GIRLS"),
-            ("https://www.stellaplayer.jp/ranking/BL?rank_type=DAILY", "BL"),
-        ]:
-            if cat_key in captured:
-                continue
-            print(f"\n{cat_key}ページを開いています...")
-            try:
-                page.goto(cat_url, wait_until="networkidle", timeout=60000)
-                page.wait_for_timeout(3000)
-            except Exception as e:
-                print(f"  ERROR: {e}")
+        # まずランキングページを開いてCookieセット
+        print("ランキングページを開いています...")
+        page.goto("https://www.stellaplayer.jp/ranking/GIRLS?rank_type=DAILY",
+                  wait_until="networkidle", timeout=60000)
+        page.wait_for_timeout(2000)
+
+        # GraphQL API を直接呼び出し
+        print("GraphQL APIを呼び出しています...")
+        api_result = fetch_ranking(page)
+
+        if api_result and "data" in api_result:
+            data = api_result["data"]
+            print(f"  取得カテゴリ: {list(data.keys())}")
+
+            for cat in ["GIRLS", "BL"]:
+                if cat not in data or not data[cat]:
+                    print(f"  {cat}: データなし")
+                    continue
+                prev_cat = prev.get(cat, {})
+                items = extract_items(data[cat], prev_cat)
+                results[cat] = items
+                print(f"  {cat}: {len(items)}件")
+                for it in items[:3]:
+                    print(f"    rank={it['rank']} {it['title'][:25]} cv={it['cv']} genres={it['tags'][:3]}")
+
+        elif api_result and "errors" in api_result:
+            # genresフィールドがない場合はフォールバック（genresなし）
+            print(f"  APIエラー: {api_result['errors'][0].get('message','')}")
+            print("  genresなしで再試行...")
+            result2 = page.evaluate("""
+                async () => {
+                    const res = await fetch('https://api.stellaplayer.jp/graphql', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Origin': 'https://www.stellaplayer.jp',
+                            'Referer': 'https://www.stellaplayer.jp/',
+                        },
+                        body: JSON.stringify({
+                            operationName: 'rankingPageRank',
+                            query: `query rankingPageRank($rankType: RankType!, $take: Int!) {
+  GIRLS: ranks(filter: {rank_type: $rankType, top_category: GIRLS, take: $take}) {
+    id rank product {
+      id name release_schedule publish_starts_at
+      converted_featured_images is_new is_online_only
+      brand { id name }
+    }
+  }
+  BL: ranks(filter: {rank_type: $rankType, top_category: BL, take: $take}) {
+    id rank product {
+      id name release_schedule publish_starts_at
+      converted_featured_images is_new is_online_only
+      brand { id name }
+    }
+  }
+}`,
+                            variables: {rankType: 'DAILY', take: 10}
+                        })
+                    });
+                    return res.json();
+                }
+            """)
+            if result2 and "data" in result2:
+                for cat in ["GIRLS", "BL"]:
+                    if cat in result2["data"] and result2["data"][cat]:
+                        prev_cat = prev.get(cat, {})
+                        results[cat] = extract_items(result2["data"][cat], prev_cat)
+                        print(f"  {cat}: {len(results[cat])}件（ジャンルなし）")
+        else:
+            print(f"  予期しないレスポンス: {json.dumps(api_result)[:300]}")
 
         browser.close()
-
-    for cat, raw in captured.items():
-        prev_cat = prev.get(cat, {})
-        results[cat] = extract_items(raw, prev_cat)
-        print(f"  → {cat}: {len(results[cat])}件")
-        for it in results[cat][:3]:
-            print(f"    rank={it['rank']} title={it['title'][:25]} cv={it['cv']} circle={it['circle']} img={'あり' if it['img'] else 'なし'} date={it['release_date']}")
 
     return results
 
