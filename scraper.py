@@ -59,7 +59,7 @@ def fetch_ranking(page):
     }
   }
 }`,
-                    variables: {rankType: 'DAILY', take: 10}
+                    variables: {rankType: 'DAILY', take: 20}
                 })
             });
             return res.json();
@@ -187,7 +187,7 @@ def scrape(prev):
     }
   }
 }`,
-                            variables: {rankType: 'DAILY', take: 10}
+                            variables: {rankType: 'DAILY', take: 20}
                         })
                     });
                     return res.json();
