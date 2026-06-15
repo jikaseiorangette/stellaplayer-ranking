@@ -35,10 +35,13 @@ def extract_items(raw_list, prev_cat):
         p = entry.get("product") or {}
 
         # タイトル
-        title = p.get("name") or p.get("title") or ""
+        title_raw = p.get("name") or p.get("title") or ""
 
         # 声優：タイトルの（CV：xxx）から抽出
-        cv = extract_cv_from_title(title)
+        cv = extract_cv_from_title(title_raw)
+
+        # タイトルからCV表記を除去
+        title = re.sub(r'\s*[（(]CV[：:][^）)]+[）)]\s*', '', title_raw).strip()
 
         # サークル
         circle = ""
