@@ -24,55 +24,52 @@ def load_prev(path="data/ranking.json"):
             pass
     return prev
 
+def extract_cv_from_title(title):
+    """タイトルから（CV：xxx）を抽出"""
+    m = re.search(r'[（(]CV[：:]\s*([^）)]+)[）)]', title)
+    return m.group(1).strip() if m else ""
+
 def extract_items(raw_list, prev_cat):
     items = []
     for entry in (raw_list or []):
         p = entry.get("product") or {}
 
         # タイトル
-        title = ""
-        for key in ["name","title","workTitle","productName"]:
-            if p.get(key):
-                title = p[key]; break
+        title = p.get("name") or p.get("title") or ""
+
+        # 声優：タイトルの（CV：xxx）から抽出
+        cv = extract_cv_from_title(title)
 
         # サークル
         circle = ""
-        for key in ["circle","maker","brand","label","makerName"]:
-            if p.get(key):
-                val = p[key]
-                circle = val.get("name","") if isinstance(val,dict) else str(val)
-                if circle: break
+        maker = p.get("maker") or p.get("circle") or p.get("brand") or {}
+        if isinstance(maker, dict):
+            circle = maker.get("name", "")
+        elif isinstance(maker, str):
+            circle = maker
 
-        # 声優
-        cv = ""
-        for key in ["cv","cast","voice","voiceActor","castName"]:
-            if p.get(key):
-                val = p[key]
-                if isinstance(val, list):
-                    cv = "、".join([v.get("name",str(v)) if isinstance(v,dict) else str(v) for v in val])
-                elif isinstance(val, dict):
-                    cv = val.get("name","")
-                else:
-                    cv = str(val)
-                if cv: break
-
-        # サムネイル
+        # サムネイル: converted_featured_images の 800x800_png を優先
         img = ""
-        for key in ["thumbnailUrl","thumbnail","image","imageUrl","coverUrl","img","jacket"]:
-            if p.get(key):
-                val = p[key]
-                img = val.get("url","") if isinstance(val,dict) else str(val)
-                if img: break
+        cfi = p.get("converted_featured_images") or {}
+        if isinstance(cfi, dict):
+            img = (cfi.get("800x800_png") or cfi.get("200x200_png") or
+                   cfi.get("main") or next(iter(cfi.values()), ""))
+        if not img:
+            for key in ["thumbnailUrl","thumbnail","image","imageUrl","coverUrl","jacket"]:
+                if p.get(key):
+                    val = p[key]
+                    img = val.get("url","") if isinstance(val,dict) else str(val)
+                    if img: break
 
         # 発売日
         release = ""
-        for key in ["releaseDate","release_date","date","publishedAt","releasedAt"]:
-            if p.get(key):
-                release = str(p[key])[:10]; break
+        rs = p.get("release_schedule") or p.get("releaseDate") or p.get("publish_starts_at") or ""
+        if rs:
+            release = str(rs)[:10].replace(" ","T").split("T")[0]
 
         # タグ
         tags = []
-        for key in ["tags","genres","genre","keywords","keyword"]:
+        for key in ["tags","genres","genre","keywords"]:
             if p.get(key):
                 val = p[key]
                 if isinstance(val, list):
@@ -82,13 +79,9 @@ def extract_items(raw_list, prev_cat):
                 if tags: break
 
         # リンク
-        link = ""
-        for key in ["url","link","productUrl","detailUrl"]:
-            if p.get(key):
-                link = str(p[key])
-                if not link.startswith("http"):
-                    link = "https://www.stellaplayer.jp" + link
-                break
+        link = p.get("url") or p.get("link") or ""
+        if link and not link.startswith("http"):
+            link = "https://www.stellaplayer.jp" + link
 
         rank = int(entry.get("rank") or 0)
 
@@ -106,10 +99,7 @@ def extract_items(raw_list, prev_cat):
                 "history": [],
             })
 
-    # デバッグ：最初の1件を詳細出力
-    if raw_list:
-        print(f"  サンプルデータ: {json.dumps(raw_list[0], ensure_ascii=False)[:500]}")
-
+    items.sort(key=lambda x: x["rank"])
     return items
 
 def scrape(prev):
@@ -129,37 +119,27 @@ def scrape(prev):
                 if "graphql" in response.url and response.status == 200:
                     body = response.json()
                     data = body.get("data", {})
-                    print(f"  GraphQL応答キー: {list(data.keys())}")
-                    for cat in ["GIRLS", "BL", "GENERAL", "girls", "bl"]:
-                        if cat in data and data[cat]:
-                            key = cat.upper()
-                            if key not in captured:
-                                captured[key] = data[cat]
-                                print(f"  📦 {key}: {len(data[cat])}件")
-            except Exception as e:
-                print(f"  handle_response error: {e}")
+                    # GIRLS/BL/GENERAL が含まれる応答を優先キャプチャ
+                    for cat in ["GIRLS", "BL", "GENERAL"]:
+                        if cat in data and data[cat] and cat not in captured:
+                            captured[cat] = data[cat]
+                            print(f"  📦 {cat}: {len(data[cat])}件キャプチャ")
+            except Exception:
+                pass
 
         page = context.new_page()
         page.on("response", handle_response)
 
-        # DAILY（24時間）ランキングを取得
         for cat_url, cat_key in [
             ("https://www.stellaplayer.jp/ranking/GIRLS?rank_type=DAILY", "GIRLS"),
             ("https://www.stellaplayer.jp/ranking/BL?rank_type=DAILY", "BL"),
         ]:
+            if cat_key in captured:
+                continue
             print(f"\n{cat_key}ページを開いています...")
             try:
                 page.goto(cat_url, wait_until="networkidle", timeout=60000)
-                page.wait_for_timeout(4000)
-                # ランキング切替ボタンをクリック（24時間）
-                try:
-                    btn = page.query_selector("button:has-text('24時間'), [data-value='DAILY'], button:has-text('DAILY')")
-                    if btn:
-                        btn.click()
-                        page.wait_for_timeout(2000)
-                        print(f"  24時間ボタンをクリック")
-                except:
-                    pass
+                page.wait_for_timeout(3000)
             except Exception as e:
                 print(f"  ERROR: {e}")
 
@@ -169,6 +149,8 @@ def scrape(prev):
         prev_cat = prev.get(cat, {})
         results[cat] = extract_items(raw, prev_cat)
         print(f"  → {cat}: {len(results[cat])}件")
+        for it in results[cat][:3]:
+            print(f"    rank={it['rank']} title={it['title'][:25]} cv={it['cv']} circle={it['circle']} img={'あり' if it['img'] else 'なし'} date={it['release_date']}")
 
     return results
 
@@ -187,12 +169,6 @@ def main():
 
     total = sum(len(v) for v in categories.values())
     print(f"\n✅ 保存完了: data/ranking.json ({now}) 合計{total}件")
-
-    # データ確認
-    for cat, items in categories.items():
-        print(f"\n=== {cat} TOP3 ===")
-        for it in items[:3]:
-            print(f"  rank={it['rank']} title={it['title'][:30]} cv={it['cv']} img={it['img'][:50] if it['img'] else 'なし'}")
 
 if __name__ == "__main__":
     main()
