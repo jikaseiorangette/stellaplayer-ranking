@@ -1,6 +1,6 @@
 """
 ステラプレイヤー ランキングスクレイパー
-GraphQL APIから直接取得
+GraphQLレスポンスをインターセプトして全フィールド取得
 """
 
 import json, os, re
@@ -8,40 +8,6 @@ from datetime import datetime, timezone, timedelta
 from playwright.sync_api import sync_playwright
 
 JST = timezone(timedelta(hours=9))
-
-# GraphQLクエリ（ブラウザのPayloadから確認したもの）
-GQL_QUERY = """
-query rankingPageRank($rankType: RankType!, $topCategory: TopCategory, $take: Int) {
-  GIRLS: ranking(rankType: $rankType, topCategory: GIRLS, take: $take) {
-    id
-    rank
-    product {
-      id
-      name
-      circle
-      cv
-      releaseDate
-      thumbnailUrl
-      tags
-      url
-    }
-  }
-  BL: ranking(rankType: $rankType, topCategory: BL, take: $take) {
-    id
-    rank
-    product {
-      id
-      name
-      circle
-      cv
-      releaseDate
-      thumbnailUrl
-      tags
-      url
-    }
-  }
-}
-"""
 
 def load_prev(path="data/ranking.json"):
     prev = {}
@@ -62,22 +28,69 @@ def extract_items(raw_list, prev_cat):
     items = []
     for entry in (raw_list or []):
         p = entry.get("product") or {}
-        title = p.get("name", "")
-        # Unicode エスケープを解決
-        if title.startswith("\\u") or "\\u" in title:
-            try:
-                title = title.encode().decode("unicode_escape")
-            except Exception:
-                pass
-        circle = p.get("circle") or p.get("maker") or ""
-        cv_raw = p.get("cv") or ""
-        cv = cv_raw if isinstance(cv_raw, str) else "、".join(cv_raw)
-        img = p.get("thumbnailUrl") or p.get("image") or ""
-        release = str(p.get("releaseDate") or "")[:10]
-        tags_raw = p.get("tags") or []
-        tags = tags_raw if isinstance(tags_raw, list) else []
-        link = p.get("url") or ""
-        rank = entry.get("rank") or 0
+
+        # タイトル
+        title = ""
+        for key in ["name","title","workTitle","productName"]:
+            if p.get(key):
+                title = p[key]; break
+
+        # サークル
+        circle = ""
+        for key in ["circle","maker","brand","label","makerName"]:
+            if p.get(key):
+                val = p[key]
+                circle = val.get("name","") if isinstance(val,dict) else str(val)
+                if circle: break
+
+        # 声優
+        cv = ""
+        for key in ["cv","cast","voice","voiceActor","castName"]:
+            if p.get(key):
+                val = p[key]
+                if isinstance(val, list):
+                    cv = "、".join([v.get("name",str(v)) if isinstance(v,dict) else str(v) for v in val])
+                elif isinstance(val, dict):
+                    cv = val.get("name","")
+                else:
+                    cv = str(val)
+                if cv: break
+
+        # サムネイル
+        img = ""
+        for key in ["thumbnailUrl","thumbnail","image","imageUrl","coverUrl","img","jacket"]:
+            if p.get(key):
+                val = p[key]
+                img = val.get("url","") if isinstance(val,dict) else str(val)
+                if img: break
+
+        # 発売日
+        release = ""
+        for key in ["releaseDate","release_date","date","publishedAt","releasedAt"]:
+            if p.get(key):
+                release = str(p[key])[:10]; break
+
+        # タグ
+        tags = []
+        for key in ["tags","genres","genre","keywords","keyword"]:
+            if p.get(key):
+                val = p[key]
+                if isinstance(val, list):
+                    tags = [v.get("name",str(v)) if isinstance(v,dict) else str(v) for v in val]
+                elif isinstance(val, str):
+                    tags = [t.strip() for t in val.split(",")]
+                if tags: break
+
+        # リンク
+        link = ""
+        for key in ["url","link","productUrl","detailUrl"]:
+            if p.get(key):
+                link = str(p[key])
+                if not link.startswith("http"):
+                    link = "https://www.stellaplayer.jp" + link
+                break
+
+        rank = int(entry.get("rank") or 0)
 
         if title:
             items.append({
@@ -90,12 +103,18 @@ def extract_items(raw_list, prev_cat):
                 "tags": [str(t) for t in tags][:8],
                 "link": link,
                 "prev_rank": prev_cat.get(title),
+                "history": [],
             })
+
+    # デバッグ：最初の1件を詳細出力
+    if raw_list:
+        print(f"  サンプルデータ: {json.dumps(raw_list[0], ensure_ascii=False)[:500]}")
+
     return items
 
-def scrape_via_playwright(prev):
-    """Playwrightでページを開き、GraphQLレスポンスをインターセプト"""
+def scrape(prev):
     results = {}
+    captured = {}
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -105,39 +124,44 @@ def scrape_via_playwright(prev):
             "Chrome/124.0.0.0 Safari/537.36"
         ))
 
-        captured = {}
-
         def handle_response(response):
             try:
                 if "graphql" in response.url and response.status == 200:
                     body = response.json()
                     data = body.get("data", {})
-                    for cat in ["GIRLS", "BL", "GENERAL"]:
+                    print(f"  GraphQL応答キー: {list(data.keys())}")
+                    for cat in ["GIRLS", "BL", "GENERAL", "girls", "bl"]:
                         if cat in data and data[cat]:
-                            captured[cat] = data[cat]
-                            print(f"  📦 {cat}: {len(data[cat])}件 キャプチャ")
-            except Exception:
-                pass
+                            key = cat.upper()
+                            if key not in captured:
+                                captured[key] = data[cat]
+                                print(f"  📦 {key}: {len(data[cat])}件")
+            except Exception as e:
+                print(f"  handle_response error: {e}")
 
         page = context.new_page()
         page.on("response", handle_response)
 
-        print("GIRLSページを開いています...")
-        page.goto(
-            "https://www.stellaplayer.jp/ranking/GIRLS?rank_type=DAILY",
-            wait_until="networkidle",
-            timeout=60000
-        )
-        page.wait_for_timeout(3000)
-
-        if "BL" not in captured:
-            print("BLページを開いています...")
-            page.goto(
-                "https://www.stellaplayer.jp/ranking/BL?rank_type=DAILY",
-                wait_until="networkidle",
-                timeout=60000
-            )
-            page.wait_for_timeout(3000)
+        # DAILY（24時間）ランキングを取得
+        for cat_url, cat_key in [
+            ("https://www.stellaplayer.jp/ranking/GIRLS?rank_type=DAILY", "GIRLS"),
+            ("https://www.stellaplayer.jp/ranking/BL?rank_type=DAILY", "BL"),
+        ]:
+            print(f"\n{cat_key}ページを開いています...")
+            try:
+                page.goto(cat_url, wait_until="networkidle", timeout=60000)
+                page.wait_for_timeout(4000)
+                # ランキング切替ボタンをクリック（24時間）
+                try:
+                    btn = page.query_selector("button:has-text('24時間'), [data-value='DAILY'], button:has-text('DAILY')")
+                    if btn:
+                        btn.click()
+                        page.wait_for_timeout(2000)
+                        print(f"  24時間ボタンをクリック")
+                except:
+                    pass
+            except Exception as e:
+                print(f"  ERROR: {e}")
 
         browser.close()
 
@@ -153,7 +177,7 @@ def main():
     prev = load_prev()
 
     print("スクレイピング開始...")
-    categories = scrape_via_playwright(prev)
+    categories = scrape(prev)
 
     output = {"updated": now, "categories": categories}
 
@@ -163,6 +187,12 @@ def main():
 
     total = sum(len(v) for v in categories.values())
     print(f"\n✅ 保存完了: data/ranking.json ({now}) 合計{total}件")
+
+    # データ確認
+    for cat, items in categories.items():
+        print(f"\n=== {cat} TOP3 ===")
+        for it in items[:3]:
+            print(f"  rank={it['rank']} title={it['title'][:30]} cv={it['cv']} img={it['img'][:50] if it['img'] else 'なし'}")
 
 if __name__ == "__main__":
     main()
