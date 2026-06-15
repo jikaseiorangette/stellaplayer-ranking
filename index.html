@@ -135,7 +135,7 @@ function render(data) {
         .sort((a,b) => (b.prev_rank-b.rank)-(a.prev_rank-a.rank))
         .slice(0,3);
 
-    document.getElementById("stat-count").textContent = items.length || "―";
+    document.getElementById("stat-count").textContent = data.total_products || items.length || "―";
     document.getElementById("stat-count-sub").textContent = dateStr + " 発売作品";
     document.getElementById("stat-new").textContent = newItems.length || "―";
     document.getElementById("stat-date").textContent = dateStr;

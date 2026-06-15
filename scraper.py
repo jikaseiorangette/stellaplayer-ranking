@@ -1,36 +1,119 @@
 """
 ステラプレイヤー ランキングスクレイパー
-- 正確なGraphQLクエリ + genres フィールドで一括取得
+- 毎日23:30 JST に自動実行
+- ランキング取得 + 履歴蓄積 + 新着CSV自動更新
 """
 
-import json, os, re, time
+import json, os, re, csv
 from datetime import datetime, timezone, timedelta
 from playwright.sync_api import sync_playwright
 
 JST = timezone(timedelta(hours=9))
 
-def load_prev(path="data/ranking.json"):
+# ===== ユーティリティ =====
+
+def load_prev_ranking(path="data/ranking.json"):
+    """前回のランキングを読んでtitle→rankのマップを返す"""
     prev = {}
-    if os.path.exists(path):
-        try:
-            with open(path, encoding="utf-8") as f:
-                d = json.load(f)
-            for cat, items in d.get("categories", {}).items():
-                prev[cat] = {}
-                for it in items:
-                    if it.get("title"):
-                        prev[cat][it["title"]] = it.get("rank")
-        except Exception:
-            pass
+    if not os.path.exists(path):
+        return prev
+    try:
+        with open(path, encoding="utf-8") as f:
+            d = json.load(f)
+        for cat, items in d.get("categories", {}).items():
+            prev[cat] = {}
+            for it in items:
+                if it.get("title"):
+                    prev[cat][it["title"]] = it.get("rank")
+    except Exception:
+        pass
     return prev
+
+def load_history(path="data/history.json"):
+    """ランク履歴を読み込む {cat: {product_id: [{date, rank}]}}"""
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+def save_history(history, path="data/history.json"):
+    """履歴を保存（30日分のみ保持）"""
+    cutoff = (datetime.now(JST) - timedelta(days=30)).strftime("%Y-%m-%d")
+    for cat in history:
+        for pid in history[cat]:
+            history[cat][pid] = [
+                h for h in history[cat][pid]
+                if h.get("date","") >= cutoff
+            ]
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(history, f, ensure_ascii=False, indent=2)
+
+def load_products_csv(path="data/products.csv"):
+    """CSVをidキーの辞書で返す"""
+    products = {}
+    if not os.path.exists(path):
+        print(f"  CSV未発見: {path}")
+        return products
+    with open(path, encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            pid = str(row.get("id","")).strip()
+            if pid:
+                products[pid] = row
+    print(f"  CSV読み込み: {len(products)}件")
+    return products
+
+def update_products_csv(new_items, path="data/products.csv"):
+    """
+    ランキングに登場した作品がCSVになければ追記する
+    （GraphQLから取れる範囲の情報のみ）
+    """
+    if not os.path.exists(path):
+        return
+    existing_ids = set()
+    rows = []
+    with open(path, encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        fieldnames = reader.fieldnames
+        for row in reader:
+            rows.append(row)
+            existing_ids.add(str(row.get("id","")).strip())
+
+    added = 0
+    for it in new_items:
+        pid = str(it.get("product_id",""))
+        if pid and pid not in existing_ids:
+            new_row = {k: "" for k in fieldnames}
+            new_row["id"] = pid
+            new_row["タイトル"] = it.get("title_raw","")
+            new_row["ブランド"] = it.get("circle","")
+            new_row["CV"] = it.get("cv","")
+            new_row["発売日"] = it.get("release_date","")
+            new_row["ジャンル"] = " / ".join(it.get("tags",[]))
+            new_row["サムネイルURL"] = it.get("img","")
+            new_row["販売ステータス"] = "ON_SALE"
+            rows.append(new_row)
+            existing_ids.add(pid)
+            added += 1
+
+    if added > 0:
+        with open(path, "w", encoding="utf-8-sig", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(rows)
+        print(f"  CSV更新: {added}件追記")
+
+# ===== スクレイピング =====
 
 def extract_cv_from_title(title):
     m = re.search(r'[（(]CV[：:]\s*([^）)]+)[）)]', title)
     return m.group(1).strip() if m else ""
 
 def fetch_ranking(page):
-    """GraphQL APIを直接呼び出してランキング+ジャンルを一括取得"""
-    result = page.evaluate("""
+    return page.evaluate("""
         async () => {
             const res = await fetch('https://api.stellaplayer.jp/graphql', {
                 method: 'POST',
@@ -65,53 +148,64 @@ def fetch_ranking(page):
             return res.json();
         }
     """)
-    return result
 
-def extract_items(raw_list, prev_cat):
+def extract_items(raw_list, prev_cat, products_csv, today_str):
     items = []
     for entry in (raw_list or []):
         p = entry.get("product") or {}
+        product_id = str(p.get("id") or "")
+        csv_row = products_csv.get(product_id, {})
 
-        title_raw = p.get("name") or ""
-        cv = extract_cv_from_title(title_raw)
+        title_raw = p.get("name") or csv_row.get("タイトル","") or ""
+        cv_from_title = extract_cv_from_title(title_raw)
         title = re.sub(r'\s*[（(]CV[：:][^）)]+[）)]\s*', '', title_raw).strip()
 
-        # サークル（brand.name）
-        brand = p.get("brand") or {}
-        circle = brand.get("name", "") if isinstance(brand, dict) else ""
+        cv = csv_row.get("CV","").strip() or cv_from_title
 
-        # サムネイル
-        img = ""
-        cfi = p.get("converted_featured_images") or {}
-        if isinstance(cfi, dict):
-            img = (cfi.get("800x800_png") or cfi.get("200x200_png") or
-                   next(iter(cfi.values()), ""))
+        circle = csv_row.get("ブランド","").strip()
+        if not circle:
+            brand = p.get("brand") or {}
+            circle = brand.get("name","") if isinstance(brand,dict) else ""
 
-        # 発売日
+        img = csv_row.get("サムネイルURL","").strip()
+        if not img:
+            cfi = p.get("converted_featured_images") or {}
+            if isinstance(cfi, dict):
+                img = cfi.get("800x800_png") or cfi.get("200x200_png") or next(iter(cfi.values()),"")
+
         release = ""
-        for key in ["release_schedule", "publish_starts_at"]:
-            if p.get(key):
-                release = str(p[key])[:10].split("T")[0].split(" ")[0]
-                break
+        csv_date = csv_row.get("発売日","").strip()
+        if csv_date:
+            release = csv_date[:10]
+        else:
+            for key in ["release_schedule","publish_starts_at"]:
+                if p.get(key):
+                    release = str(p[key])[:10].split("T")[0].split(" ")[0]
+                    break
 
-        # ジャンル（genres フィールド）
-        genres_raw = p.get("genres") or []
-        tags = [g.get("name", "") for g in genres_raw if isinstance(g, dict) and g.get("name")]
+        tags = []
+        csv_genres = csv_row.get("ジャンル","").strip()
+        if csv_genres:
+            tags = [g.strip() for g in csv_genres.split("/") if g.strip()]
+        else:
+            genres_raw = p.get("genres") or []
+            tags = [g.get("name","") for g in genres_raw if isinstance(g,dict) and g.get("name")]
 
-        product_id = str(p.get("id") or "")
-        link = f"https://www.stellaplayer.jp/product/{product_id}" if product_id else ""
         rank = int(entry.get("rank") or 0)
+        link = f"https://www.stellaplayer.jp/product/{product_id}" if product_id else ""
 
         if title:
             items.append({
                 "rank": rank,
                 "title": title,
+                "title_raw": title_raw,
                 "circle": circle,
                 "cv": cv,
                 "img": img,
                 "release_date": release,
                 "tags": tags[:8],
                 "link": link,
+                "product_id": product_id,
                 "prev_rank": prev_cat.get(title),
                 "history": [],
             })
@@ -119,8 +213,26 @@ def extract_items(raw_list, prev_cat):
     items.sort(key=lambda x: x["rank"])
     return items
 
-def scrape(prev):
+def update_history(history, cat, items, today_str):
+    """今日のランクを履歴に追記"""
+    if cat not in history:
+        history[cat] = {}
+    for it in items:
+        pid = it.get("product_id","")
+        if not pid:
+            continue
+        if pid not in history[cat]:
+            history[cat][pid] = []
+        history[cat][pid] = [h for h in history[cat][pid] if h.get("date") != today_str]
+        history[cat][pid].append({"date": today_str, "rank": it["rank"]})
+        history[cat][pid].sort(key=lambda x: x["date"])
+        it["history"] = history[cat][pid]
+
+# ===== メイン =====
+
+def scrape(prev, products_csv, history, today_str):
     results = {}
+    all_raw_items = []
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -131,96 +243,62 @@ def scrape(prev):
         ))
         page = context.new_page()
 
-        # まずランキングページを開いてCookieセット
         print("ランキングページを開いています...")
         page.goto("https://www.stellaplayer.jp/ranking/GIRLS?rank_type=DAILY",
                   wait_until="networkidle", timeout=60000)
         page.wait_for_timeout(2000)
 
-        # GraphQL API を直接呼び出し
         print("GraphQL APIを呼び出しています...")
         api_result = fetch_ranking(page)
-
-        if api_result and "data" in api_result:
-            data = api_result["data"]
-            print(f"  取得カテゴリ: {list(data.keys())}")
-
-            for cat in ["GIRLS", "BL"]:
-                if cat not in data or not data[cat]:
-                    print(f"  {cat}: データなし")
-                    continue
-                prev_cat = prev.get(cat, {})
-                items = extract_items(data[cat], prev_cat)
-                results[cat] = items
-                print(f"  {cat}: {len(items)}件")
-                for it in items[:3]:
-                    print(f"    rank={it['rank']} {it['title'][:25]} cv={it['cv']} genres={it['tags'][:3]}")
-
-        elif api_result and "errors" in api_result:
-            # genresフィールドがない場合はフォールバック（genresなし）
-            print(f"  APIエラー: {api_result['errors'][0].get('message','')}")
-            print("  genresなしで再試行...")
-            result2 = page.evaluate("""
-                async () => {
-                    const res = await fetch('https://api.stellaplayer.jp/graphql', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Origin': 'https://www.stellaplayer.jp',
-                            'Referer': 'https://www.stellaplayer.jp/',
-                        },
-                        body: JSON.stringify({
-                            operationName: 'rankingPageRank',
-                            query: `query rankingPageRank($rankType: RankType!, $take: Int!) {
-  GIRLS: ranks(filter: {rank_type: $rankType, top_category: GIRLS, take: $take}) {
-    id rank product {
-      id name release_schedule publish_starts_at
-      converted_featured_images is_new is_online_only
-      brand { id name }
-    }
-  }
-  BL: ranks(filter: {rank_type: $rankType, top_category: BL, take: $take}) {
-    id rank product {
-      id name release_schedule publish_starts_at
-      converted_featured_images is_new is_online_only
-      brand { id name }
-    }
-  }
-}`,
-                            variables: {rankType: 'DAILY', take: 20}
-                        })
-                    });
-                    return res.json();
-                }
-            """)
-            if result2 and "data" in result2:
-                for cat in ["GIRLS", "BL"]:
-                    if cat in result2["data"] and result2["data"][cat]:
-                        prev_cat = prev.get(cat, {})
-                        results[cat] = extract_items(result2["data"][cat], prev_cat)
-                        print(f"  {cat}: {len(results[cat])}件（ジャンルなし）")
-        else:
-            print(f"  予期しないレスポンス: {json.dumps(api_result)[:300]}")
-
         browser.close()
+
+    if not (api_result and "data" in api_result):
+        print(f"  APIエラー: {json.dumps(api_result)[:300]}")
+        return results
+
+    data = api_result["data"]
+    print(f"  取得カテゴリ: {list(data.keys())}")
+
+    for cat in ["GIRLS", "BL"]:
+        if cat not in data or not data[cat]:
+            continue
+        prev_cat = prev.get(cat, {})
+        items = extract_items(data[cat], prev_cat, products_csv, today_str)
+
+        update_history(history, cat, items, today_str)
+
+        results[cat] = items
+        all_raw_items.extend(items)
+        print(f"  {cat}: {len(items)}件")
+        for it in items[:3]:
+            print(f"    rank={it['rank']} {it['title'][:25]} cv={it['cv']} tags={it['tags'][:3]} history={len(it['history'])}日分")
+
+    update_products_csv(all_raw_items, "data/products.csv")
 
     return results
 
 def main():
-    now = datetime.now(JST).strftime("%Y/%m/%d %H:%M")
-    prev = load_prev()
+    now = datetime.now(JST)
+    now_str = now.strftime("%Y/%m/%d %H:%M")
+    today_str = now.strftime("%Y-%m-%d")
 
-    print("スクレイピング開始...")
-    categories = scrape(prev)
+    prev = load_prev_ranking()
+    products_csv = load_products_csv("data/products.csv")
+    history = load_history()
 
-    output = {"updated": now, "categories": categories}
+    print(f"スクレイピング開始... ({today_str})")
+    categories = scrape(prev, products_csv, history, today_str)
 
+    output = {"updated": now_str, "total_products": len(products_csv), "categories": categories}
     os.makedirs("data", exist_ok=True)
     with open("data/ranking.json", "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
+    save_history(history)
+
     total = sum(len(v) for v in categories.values())
-    print(f"\n✅ 保存完了: data/ranking.json ({now}) 合計{total}件")
+    print(f"\n✅ 保存完了: ranking.json ({now_str}) 合計{total}件")
+    print(f"✅ history.json 更新完了")
 
 if __name__ == "__main__":
     main()
