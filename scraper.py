@@ -223,9 +223,11 @@ def update_history(history, cat, items, today_str):
             continue
         if pid not in history[cat]:
             history[cat][pid] = []
+        # 同日が既にあれば上書き
         history[cat][pid] = [h for h in history[cat][pid] if h.get("date") != today_str]
         history[cat][pid].append({"date": today_str, "rank": it["rank"]})
         history[cat][pid].sort(key=lambda x: x["date"])
+        # 作品のhistoryフィールドにも付与
         it["history"] = history[cat][pid]
 
 # ===== メイン =====
@@ -265,6 +267,7 @@ def scrape(prev, products_csv, history, today_str):
         prev_cat = prev.get(cat, {})
         items = extract_items(data[cat], prev_cat, products_csv, today_str)
 
+        # 履歴に今日のデータを追記
         update_history(history, cat, items, today_str)
 
         results[cat] = items
@@ -273,6 +276,7 @@ def scrape(prev, products_csv, history, today_str):
         for it in items[:3]:
             print(f"    rank={it['rank']} {it['title'][:25]} cv={it['cv']} tags={it['tags'][:3]} history={len(it['history'])}日分")
 
+    # CSVに新作を追記
     update_products_csv(all_raw_items, "data/products.csv")
 
     return results
@@ -289,11 +293,36 @@ def main():
     print(f"スクレイピング開始... ({today_str})")
     categories = scrape(prev, products_csv, history, today_str)
 
-    output = {"updated": now_str, "total_products": len(products_csv), "categories": categories}
+    # ranking.json 保存
+    # 近日配信予定作品をCSVから抽出
+    preorders = []
+    for pid, row in products_csv.items():
+        if row.get("販売ステータス") == "PREORDER":
+            title_raw = row.get("タイトル","")
+            import re as _re
+            cv_m = _re.search(r"[（(]CV[：:]\s*([^）)]+)[）)]", title_raw)
+            cv_name = cv_m.group(1).strip() if cv_m else row.get("CV","")
+            title = _re.sub(r"\s*[（(]CV[：:][^）)]+[）)]\s*", "", title_raw).strip()
+            tags = [g.strip() for g in row.get("ジャンル","").split("/") if g.strip()]
+            preorders.append({
+                "id": pid,
+                "title": title,
+                "circle": row.get("ブランド",""),
+                "cv": cv_name,
+                "release_date": row.get("発売日","")[:10],
+                "streaming_date": row.get("配信開始日","")[:10],
+                "tags": tags[:8],
+                "img": row.get("サムネイルURL",""),
+                "link": f"https://www.stellaplayer.jp/product/{pid}",
+                "has_bonus": row.get("オリジナル特典","") == "True",
+            })
+    preorders.sort(key=lambda x: x["release_date"])
+    output = {"updated": now_str, "total_products": len(products_csv), "preorders": preorders, "categories": categories}
     os.makedirs("data", exist_ok=True)
     with open("data/ranking.json", "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
+    # history.json 保存（30日分）
     save_history(history)
 
     total = sum(len(v) for v in categories.values())
