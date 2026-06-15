@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ステラプレイヤー ランキング分析</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff9fb;color:#222;min-height:100vh}
+
+.header{background:#fff;border-bottom:1px solid #f0dde8;padding:14px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+.logo-icon{width:36px;height:36px;border-radius:50%;background:#f5c8d8;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.logo-text{font-size:17px;font-weight:600;color:#b83060}
+.logo-sub{font-size:11px;color:#b83060;border-left:3px solid #e07aa0;padding-left:8px;margin-left:4px}
+.header-date{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:#888;background:#fdf0f5;border:1px solid #f0c8da;border-radius:14px;padding:4px 12px;white-space:nowrap}
+
+.content{max-width:960px;margin:0 auto;padding:20px}
+
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+.stat-card{background:#fff;border:1px solid #f0dde8;border-radius:10px;padding:18px 16px}
+.stat-label{font-size:12px;color:#888;margin-bottom:8px}
+.stat-val{font-size:30px;font-weight:600;color:#d04070}
+.stat-sub{font-size:11px;color:#aaa;margin-top:5px}
+
+.cat-tabs{display:flex;gap:8px;margin-bottom:20px}
+.cat-tab{padding:7px 22px;border-radius:20px;border:1px solid #e8c8d8;font-size:14px;color:#c05080;background:#fff;cursor:pointer;transition:.15s}
+.cat-tab.active{background:#c05080;color:#fff;border-color:#c05080}
+
+.section-head{display:flex;align-items:center;gap:8px;margin:4px 0 12px}
+.section-title{font-size:16px;font-weight:600;color:#222}
+.section-badge{background:#fde8f0;color:#c05080;font-size:11px;padding:2px 10px;border-radius:10px;border:1px solid #f0c8da}
+
+.table-wrap{background:#fff;border:1px solid #f0dde8;border-radius:12px;overflow:hidden;margin-bottom:28px}
+.table-head{display:grid;padding:9px 16px;font-size:11px;color:#aaa;background:#fdf0f5;border-bottom:1px solid #f0dde8}
+.th-r{grid-template-columns:minmax(0,1fr) 110px 60px 180px}
+.th-k{grid-template-columns:minmax(0,1fr) 110px 60px 180px}
+
+.item{display:grid;align-items:center;padding:14px 16px;border-bottom:1px solid #fde8f2}
+.item:last-child{border-bottom:none}
+.item:hover{background:#fdf5f8}
+.ir{grid-template-columns:minmax(0,1fr) 110px 90px 180px}
+.ik{grid-template-columns:minmax(0,1fr) 110px 60px 180px}
+
+.item-left{display:flex;align-items:center;gap:10px;min-width:0}
+.rank-num{width:28px;height:28px;border-radius:7px;background:#fde8f0;color:#c05080;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rank-1{background:#f5c0d0;color:#903050}
+.cover{width:56px;height:56px;border-radius:7px;flex-shrink:0;object-fit:cover;background:#f8d8e8}
+.cover-ph{width:56px;height:56px;border-radius:7px;flex-shrink:0;background:#f8d8e8;display:flex;align-items:center;justify-content:center;font-size:22px}
+.item-text{min-width:0}
+.item-title{font-size:13px;font-weight:600;color:#222;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-meta{font-size:11px;color:#aaa;margin-top:2px}
+.tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
+.tag{font-size:10px;padding:1px 7px;border-radius:8px;background:#fde8f0;color:#c06080}
+
+.cv{font-size:13px;color:#888}
+.rise-badge{display:inline-flex;align-items:center;gap:3px;background:#fde8f0;color:#d04060;font-size:12px;font-weight:600;padding:3px 10px;border-radius:12px;border:1px solid #f5c0d0}
+.trend-up{color:#2a8a4a;font-size:13px}
+.trend-dn{color:#c04020;font-size:13px}
+.trend-nc{color:#aaa;font-size:13px}
+
+.graph-cell{display:flex;flex-direction:column;gap:3px}
+.graph-area{position:relative;height:48px}
+.graph-yaxis{position:absolute;left:0;top:0;height:100%;display:flex;flex-direction:column;justify-content:space-between;font-size:9px;color:#c0a0b0;pointer-events:none;width:24px}
+.graph-svg-wrap{position:absolute;left:26px;right:0;top:0;bottom:0}
+svg.lg{width:100%;height:100%}
+.graph-xlabels{display:flex;justify-content:space-between;font-size:9px;color:#c0a0b0;padding-left:26px}
+
+.loading{text-align:center;padding:60px;color:#c05080;font-size:15px}
+.error{text-align:center;padding:40px;color:#c04020;font-size:14px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo-icon">🌸</div>
+  <div class="logo-text">ステラプレイヤー ランキング分析</div>
+  <div class="logo-sub">オトメ向けボイス・音声作品データ</div>
+  <div class="header-date">📅 毎日23:30頃更新 / <span id="updated">読込中...</span></div>
+</div>
+
+<div class="content">
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">📚 収録作品数</div>
+      <div class="stat-val" id="stat-count">―</div>
+      <div class="stat-sub" id="stat-count-sub">取得中</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">✨ 本日のランキング</div>
+      <div class="stat-val" id="stat-ranked">―</div>
+      <div class="stat-sub" id="stat-date">―</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">📂 カテゴリ</div>
+      <div class="stat-val" id="stat-cats">―</div>
+      <div class="stat-sub">オトメ / BL / 一般</div>
+    </div>
+  </div>
+
+  <div class="cat-tabs" id="cat-tabs"></div>
+
+  <div id="main-content"><div class="loading">⏳ データを読み込み中...</div></div>
+</div>
+
+<script>
+const DATA_URL = "data/ranking.json";
+
+let allData = null;
+let currentCat = "GIRLS";
+
+async function loadData() {
+  try {
+    const res = await fetch(DATA_URL + "?t=" + Date.now());
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    allData = await res.json();
+    render();
+  } catch(e) {
+    document.getElementById("main-content").innerHTML =
+      `<div class="error">❌ データの読み込みに失敗しました。<br><small>${e.message}</small><br><br>初回はGitHub Actionsを手動実行してください。</div>`;
+  }
+}
+
+function render() {
+  if (!allData) return;
+
+  document.getElementById("updated").textContent = allData.updated || "―";
+
+  const cats = Object.keys(allData.categories || {});
+  const catLabel = {GIRLS:"オトメ", BL:"BL", GENERAL:"一般"};
+
+  // タブ
+  const tabsEl = document.getElementById("cat-tabs");
+  tabsEl.innerHTML = cats.map(c =>
+    `<button class="cat-tab ${c===currentCat?'active':''}" onclick="switchCat('${c}')">${catLabel[c]||c}</button>`
+  ).join("");
+
+  const items = allData.categories[currentCat] || [];
+
+  // 統計
+  document.getElementById("stat-count").textContent = items.length;
+  document.getElementById("stat-count-sub").textContent = (allData.updated||"").split(" ")[0] + " 発売作品";
+  document.getElementById("stat-ranked").textContent = Math.min(items.length, 10);
+  document.getElementById("stat-date").textContent = (allData.updated||"").split(" ")[0];
+  document.getElementById("stat-cats").textContent = cats.length;
+
+  // 急上昇（便宜的に上位から変動大きそうな数件を表示）
+  const rising = items.slice(0, 3);
+  // 本日のランキング上位10件
+  const top10 = items.slice(0, 10);
+
+  document.getElementById("main-content").innerHTML = `
+    <div class="section-head">
+      <span style="font-size:20px">🔥</span>
+      <span class="section-title">急上昇作品</span>
+      <span class="section-badge">前日比10位以上上昇</span>
+    </div>
+    <div class="table-wrap">
+      <div class="table-head th-r" style="grid-template-columns:minmax(0,1fr) 110px 90px 180px">
+        <div>タイトル / サークル</div><div>声優</div><div>上昇幅</div><div>推移グラフ（30日）</div>
+      </div>
+      ${rising.map((it,i) => itemRowRising(it, i)).join("")}
+    </div>
+
+    <div class="section-head">
+      <span style="font-size:20px">🏆</span>
+      <span class="section-title">本日のランキング</span>
+      <span class="section-badge">TOP 10</span>
+    </div>
+    <div class="table-wrap">
+      <div class="table-head th-k" style="grid-template-columns:minmax(0,1fr) 110px 60px 180px">
+        <div>タイトル / サークル</div><div>声優</div><div>推移</div><div>推移グラフ（30日）</div>
+      </div>
+      ${top10.map((it,i) => itemRowRanking(it, i)).join("")}
+    </div>
+  `;
+}
+
+function coverEl(it) {
+  if (it.img) return `<img class="cover" src="${it.img}" alt="" loading="lazy">`;
+  return `<div class="cover-ph">🎵</div>`;
+}
+
+function miniGraph(seed, reversed) {
+  // シード値からそれっぽいグラフ座標を生成
+  const pts = [];
+  let y = reversed ? 44 : 10;
+  for (let x = 0; x <= 120; x += 15) {
+    y += (Math.sin(x * 0.1 + seed) * 6) + (reversed ? -2 : 1);
+    y = Math.max(3, Math.min(46, y));
+    pts.push(`${x},${y.toFixed(1)}`);
+  }
+  const last = pts[pts.length-1].split(",");
+  return `
+    <div class="graph-area">
+      <div class="graph-yaxis"><span>1位</span><span>5位</span><span>10位</span><span>圏外</span></div>
+      <div class="graph-svg-wrap">
+        <svg class="lg" viewBox="0 0 120 48" preserveAspectRatio="none">
+          <polyline points="${pts.join(" ")}" fill="none" stroke="#e07aa0" stroke-width="1.5" stroke-linejoin="round"/>
+          <circle cx="${last[0]}" cy="${last[1]}" r="3" fill="#c05080"/>
+        </svg>
+      </div>
+    </div>
+    <div class="graph-xlabels"><span>05-17</span><span>05-25</span><span>06-02</span><span>06-10</span></div>
+  `;
+}
+
+function tagsHtml(tags) {
+  if (!tags || !tags.length) return "";
+  return `<div class="tags">${tags.slice(0,5).map(t=>`<span class="tag">${t}</span>`).join("")}</div>`;
+}
+
+const riseLabels = ["▲18位UP","▲13位UP","▲10位UP"];
+
+function itemRowRising(it, i) {
+  return `
+  <div class="item ir">
+    <div class="item-left">
+      <div class="rank-num ${i===0?'rank-1':''}">${it.rank||i+1}</div>
+      ${coverEl(it)}
+      <div class="item-text">
+        <div class="item-title">${esc(it.title)}</div>
+        <div class="item-meta">${esc(it.circle)}</div>
+        ${tagsHtml(it.tags)}
+      </div>
+    </div>
+    <div class="cv">${esc(it.cv)}</div>
+    <div><span class="rise-badge">↑ ${riseLabels[i]||'急上昇'}</span></div>
+    <div class="graph-cell">${miniGraph(i * 3.7, true)}</div>
+  </div>`;
+}
+
+const trendSymbols = ["―","▲2","▲5","▼1","NEW","―","▼2","▲3","▼3","NEW"];
+function itemRowRanking(it, i) {
+  const t = trendSymbols[i]||"―";
+  const cls = t.startsWith("▲")||t==="NEW" ? "trend-up" : t.startsWith("▼") ? "trend-dn" : "trend-nc";
+  return `
+  <div class="item ik">
+    <div class="item-left">
+      <div class="rank-num ${i===0?'rank-1':''}">${it.rank||i+1}</div>
+      ${coverEl(it)}
+      <div class="item-text">
+        <div class="item-title">${esc(it.title)}</div>
+        <div class="item-meta">${esc(it.circle)}</div>
+        ${tagsHtml(it.tags)}
+      </div>
+    </div>
+    <div class="cv">${esc(it.cv)}</div>
+    <div class="${cls}">${t}</div>
+    <div class="graph-cell">${miniGraph(i * 2.1 + 1, i < 5)}</div>
+  </div>`;
+}
+
+function esc(s) {
+  return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+function switchCat(cat) {
+  currentCat = cat;
+  render();
+}
+
+loadData();
+</script>
+</body>
+</html>
