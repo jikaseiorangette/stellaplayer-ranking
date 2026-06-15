@@ -141,7 +141,7 @@ function render(data) {
     document.getElementById("stat-date").textContent = dateStr;
     document.getElementById("stat-rising").textContent = rising.length || "―";
 
-    const top10 = items.slice(0,10);
+    const top10 = items.slice(0,10); // APIはrank=2欠番等あるが先頭10件を表示
 
     document.getElementById("main-content").innerHTML = `
     <div class="section">
@@ -201,8 +201,10 @@ function render(data) {
 }
 
 function rankBadge(rank, i) {
-    const cls = i===0?'r1':i===1?'r2':i===2?'r3':'rn';
-    return `<span class="rb ${cls}">${rank||i+1}</span>`;
+    // 表示は連番、バッジ色はAPIのrank値で決定
+    const displayNum = i + 1;
+    const cls = rank===1?'r1':rank===2?'r2':rank===3?'r3':'rn';
+    return `<span class="rb ${cls}">${displayNum}</span>`;
 }
 
 function coverEl(it, i, prefix) {
