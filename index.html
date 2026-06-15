@@ -195,7 +195,7 @@ function render(data) {
 
     // グラフ描画
     document.querySelectorAll('canvas[data-idx]').forEach(c => {
-        drawChart(c.id, JSON.parse(c.dataset.history||'[]'), c.dataset.rank);
+        drawChart(c.id, JSON.parse(c.dataset.history||'[]'), c.dataset.rank, parseInt(c.dataset.displayRank)||null);
     });
 }
 
@@ -266,7 +266,7 @@ function rowRising(it, i) {
         </td>
         <td style="font-size:11px;color:var(--text-sub)">${esc(it.cv||'')}</td>
         <td><span class="rise-pill">▲${diff}位UP</span></td>
-        <td class="chart-cell"><canvas id="${cid}" class="chart-wrap" data-idx="${i}" data-history='${JSON.stringify(it.history||[])}' data-rank="${it.rank||0}"></canvas></td>
+        <td class="chart-cell"><canvas id="${cid}" class="chart-wrap" data-idx="${i}" data-history='${JSON.stringify(it.history||[])}' data-rank="${it.rank||i+1}"></canvas></td>
     </tr>`;
 }
 
@@ -289,14 +289,15 @@ function rowRanking(it, i) {
         </td>
         <td style="font-size:11px;color:var(--text-sub)">${esc(it.cv||'')}</td>
         <td>${trendHtml(it)}</td>
-        <td class="chart-cell"><canvas id="${cid}" class="chart-wrap" data-idx="${i}" data-history='${JSON.stringify(it.history||[])}' data-rank="${it.rank||0}"></canvas></td>
+        <td class="chart-cell"><canvas id="${cid}" class="chart-wrap" data-idx="${i}" data-history='${JSON.stringify(it.history||[])}' data-rank="${it.rank||0}" data-display-rank="${i+1}"></canvas></td>
     </tr>`;
 }
 
-function drawChart(canvasId, history, currentRank) {
+function drawChart(canvasId, history, currentRank, displayRank) {
     const ctx = document.getElementById(canvasId);
     if (!ctx) return;
-    // historyがなければダミーデータで描画
+
+    // 過去30日分のラベルを生成
     const labels = [];
     const ranks = [];
     const today = new Date();
@@ -306,16 +307,30 @@ function drawChart(canvasId, history, currentRank) {
         labels.push(d.toISOString().slice(0,10));
         ranks.push(null);
     }
+
     if (history && history.length > 0) {
+        // historyのrank（APIの実値）をそのまま使う
         history.forEach(h => {
             const idx = labels.indexOf(h.date);
             if (idx >= 0) ranks[idx] = h.rank;
         });
-    } else if (currentRank) {
-        ranks[ranks.length-1] = parseInt(currentRank)||null;
     }
-    const disp = ranks.map(v => v===null?null: v>14?15:v);
+
+    // 今日のデータ: displayRank（表示順）を優先、なければcurrentRank（APIのrank値）
+    const todayStr = today.toISOString().slice(0,10);
+    const todayIdx = labels.indexOf(todayStr);
+    if (todayIdx >= 0 && ranks[todayIdx] === null) {
+        if (displayRank) ranks[todayIdx] = displayRank;
+        else if (currentRank) ranks[todayIdx] = parseInt(currentRank)||null;
+    } else if (todayIdx >= 0 && ranks[todayIdx] !== null && displayRank) {
+        // historyにデータがあっても今日分はdisplayRankで上書き
+        ranks[todayIdx] = displayRank;
+    }
+
+    // 圏外扱い（rank>20）は21として表示
+    const disp = ranks.map(v => v===null ? null : (v > 20 ? 21 : v));
     const isSingle = ranks.filter(v=>v!==null).length===1;
+
     new Chart(ctx, {
         type:'line',
         data:{
@@ -340,25 +355,61 @@ function drawChart(canvasId, history, currentRank) {
             interaction:{mode:'index',intersect:false},
             scales:{
                 y:{
-                    reverse:true,min:-1,max:17,
-                    ticks:{font:{size:11},color:'#b8829a',includeBounds:false,
-                        callback:v=>{if(v===1)return'1位';if(v===5)return'5位';if(v===10)return'10位';if(v===15)return'圏外';return null}
+                    reverse:true,
+                    min:0,
+                    max:22,
+                    ticks:{
+                        font:{size:11},
+                        color:'#b8829a',
+                        includeBounds:false,
+                        callback:v=>{
+                            if(v===1)return'1位';
+                            if(v===5)return'5位';
+                            if(v===10)return'10位';
+                            if(v===21)return'圏外';
+                            return null;
+                        }
                     },
-                    beforeFit:axis=>{axis.ticks=[{value:1,label:'1位'},{value:5,label:'5位'},{value:10,label:'10位'},{value:15,label:'圏外'}]},
-                    grid:{color:'rgba(232,82,138,0.07)'},border:{display:false}
+                    beforeFit:axis=>{
+                        axis.ticks=[
+                            {value:1,label:'1位'},
+                            {value:5,label:'5位'},
+                            {value:10,label:'10位'},
+                            {value:21,label:'圏外'},
+                        ];
+                    },
+                    grid:{color:'rgba(232,82,138,0.07)'},
+                    border:{display:false}
                 },
                 x:{
                     ticks:{font:{size:9},color:'#b8829a',maxTicksLimit:4},
-                    grid:{display:false},border:{display:false}
+                    grid:{display:false},
+                    border:{display:false}
                 }
             },
             plugins:{
                 legend:{display:false},
                 tooltip:{
-                    enabled:true,mode:'index',intersect:false,
-                    callbacks:{label:c=>{const raw=ranks[c.dataIndex];if(raw===null)return'';if(raw>30)return'圏外';return raw+'位'}},
-                    titleFont:{size:11},bodyFont:{size:12},padding:8,
-                    backgroundColor:'rgba(139,26,66,0.85)',titleColor:'#fde0e7',bodyColor:'#fff',
+                    enabled:true,
+                    mode:'index',
+                    intersect:false,
+                    callbacks:{
+                        label:c=>{
+                            const raw=ranks[c.dataIndex];
+                            if(raw===null||raw===undefined)return'';
+                            if(raw>20)return'圏外';
+                            // 当日のデータはdisplayRank（表示順）を優先
+                            const todayStr2 = new Date().toISOString().slice(0,10);
+                            if(labels[c.dataIndex]===todayStr2 && displayRank) return displayRank+'位';
+                            return raw+'位';
+                        }
+                    },
+                    titleFont:{size:11},
+                    bodyFont:{size:12},
+                    padding:8,
+                    backgroundColor:'rgba(139,26,66,0.85)',
+                    titleColor:'#fde0e7',
+                    bodyColor:'#fff',
                 }
             }
         }
