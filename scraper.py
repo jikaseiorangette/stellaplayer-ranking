@@ -307,16 +307,17 @@ def main():
     print(f"スクレイピング開始... ({today_str})")
     categories = scrape(prev, products_csv, history, today_str)
 
-    # ranking.json 保存
-    # 近日配信予定作品をCSVから抽出
+    # ★ CSVはscrape()内で更新済みなので再読み込みして最新状態を使う
+    products_csv_latest = load_products_csv("data/products.csv")
+
+    # 近日配信予定作品をCSVから抽出（スクレイピング後の最新CSVを使用）
     preorders = []
-    for pid, row in products_csv.items():
+    for pid, row in products_csv_latest.items():
         if row.get("販売ステータス") == "PREORDER":
             title_raw = row.get("タイトル","")
-            import re as _re
-            cv_m = _re.search(r"[（(]CV[：:]\s*([^）)]+)[）)]", title_raw)
+            cv_m = re.search(r"[（(]CV[：:]\s*([^）)]+)[）)]", title_raw)
             cv_name = cv_m.group(1).strip() if cv_m else row.get("CV","")
-            title = _re.sub(r"\s*[（(]CV[：:][^）)]+[）)]\s*", "", title_raw).strip()
+            title = re.sub(r"\s*[（(]CV[：:][^）)]+[）)]\s*", "", title_raw).strip()
             tags = [g.strip() for g in row.get("ジャンル","").split("/") if g.strip()]
             preorders.append({
                 "id": pid,
@@ -331,12 +332,15 @@ def main():
                 "has_bonus": row.get("オリジナル特典","") == "True",
             })
     preorders.sort(key=lambda x: x["release_date"])
-    # 2026年発売・配信済み作品数を集計
+
+    # 2026年発売・ON_SALEの作品数（最新CSVから集計）
+    # ※ 当日スクレイピングでPREORDER→ON_SALEに更新された分も含む
     count_2026 = sum(
-        1 for row in products_csv.values()
+        1 for row in products_csv_latest.values()
         if row.get("販売ステータス") == "ON_SALE"
         and str(row.get("発売日","")).startswith("2026")
     )
+    print(f"  2026年発売ON_SALE: {count_2026}件, 近日配信予定: {len(preorders)}件")
     output = {"updated": now_str, "total_products": count_2026, "preorders": preorders, "categories": categories}
     os.makedirs("data", exist_ok=True)
     with open("data/ranking.json", "w", encoding="utf-8") as f:
