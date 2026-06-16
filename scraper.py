@@ -1,424 +1,358 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ステラプレイヤー ランキング分析</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500&family=Noto+Sans+JP:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<style>
-:root{
-    --rose-50:#fff1f4;--rose-100:#fde0e7;--rose-600:#d4386f;
-    --rose-800:#8b1a42;--mauve-50:#fdf4f8;
-    --text-main:#3a1628;--text-sub:#8b4f6a;--text-muted:#b8829a;
-    --border:#f0c4d8;--border-light:#fae0ec;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Noto Sans JP',sans-serif;background:var(--rose-50);color:var(--text-main);min-height:100vh}
-.site-wrap{max-width:1200px;margin:0 auto;padding:20px 16px 60px}
-.header{display:flex;align-items:center;gap:14px;padding:16px 24px;background:#fff;border:0.5px solid var(--border);border-radius:16px;margin-bottom:20px}
-.header-icon{width:38px;height:38px;border-radius:50%;background:var(--rose-100);display:flex;align-items:center;justify-content:center;font-size:18px}
-.header-title{font-family:'Noto Serif JP',serif;font-size:18px;font-weight:500;color:var(--rose-800);letter-spacing:.04em}
-.header-sub{font-size:12px;font-weight:500;color:var(--rose-600);margin-top:3px;letter-spacing:.02em;border-left:2.5px solid var(--rose-600);padding-left:7px}
-.header-update{margin-left:auto;font-size:11px;color:var(--rose-600);background:var(--rose-50);border:0.5px solid var(--border);border-radius:20px;padding:5px 12px;white-space:nowrap}
-.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
-.stat-card{background:#fff;border:0.5px solid var(--border);border-radius:14px;padding:14px 16px}
-.stat-label{font-size:11px;color:var(--text-muted);margin-bottom:6px}
-.stat-value{font-family:'Noto Serif JP',serif;font-size:26px;font-weight:500;color:var(--rose-800)}
-.stat-sub{font-size:10px;color:var(--text-muted);margin-top:3px}
-.section{margin-bottom:28px}
-.section-head{display:flex;align-items:center;gap:8px;margin-bottom:12px}
-.section-title{font-family:'Noto Serif JP',serif;font-size:15px;font-weight:500;color:var(--rose-800)}
-.section-badge{font-size:10px;background:var(--rose-100);color:var(--rose-600);border:0.5px solid var(--border);border-radius:20px;padding:2px 9px}
-.table-card{background:#fff;border:0.5px solid var(--border);border-radius:16px;overflow:hidden}
-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
-thead th{background:var(--mauve-50);color:var(--rose-800);font-weight:500;padding:10px 8px;border-bottom:0.5px solid var(--border-light);text-align:left;font-size:11px}
-tbody td{padding:6px 8px;border-bottom:0.5px solid var(--border-light);vertical-align:top}
-tbody td.thumb-wrap{vertical-align:middle}
-tbody tr:last-child td{border-bottom:none}
-tbody tr:hover td{background:var(--rose-50)}
-.rb{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;font-size:11px;font-weight:500}
-.r1{background:#fef3c7;color:#92400e;border:0.5px solid #fde68a}
-.r2{background:#f1f5f9;color:#475569;border:0.5px solid #e2e8f0}
-.r3{background:#fef0e6;color:#9a3412;border:0.5px solid #fed7aa}
-.rn{background:var(--rose-50);color:var(--text-muted);border:0.5px solid var(--border-light)}
-.thumb-wrap{width:150px;min-width:150px;padding:4px 6px 4px 8px;position:relative}
-.thumb-wrap img{width:146px;height:110px;object-fit:cover;border-radius:8px;border:0.5px solid var(--border-light);display:block}
-.thumb-wrap a{display:block}
-.thumb-rank{position:absolute;top:7px;left:11px;z-index:1}
-.title-cell{padding-left:8px !important}
-.work-title{font-weight:500;color:var(--rose-800);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.work-title a{color:var(--rose-800);text-decoration:none}
-.work-title a:hover{color:var(--rose-600);text-decoration:underline}
-.work-circle{font-size:10px;color:var(--text-muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.work-date{font-size:10px;color:var(--text-muted);margin-right:4px;white-space:nowrap}
-.genres{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}
-.gtag{display:inline-block;font-size:9px;background:var(--rose-50);color:var(--text-muted);border:0.5px solid var(--border-light);border-radius:20px;padding:1px 6px;white-space:nowrap}
-.rise-pill{display:inline-flex;align-items:center;gap:2px;background:var(--rose-50);color:var(--rose-600);border:0.5px solid var(--border);border-radius:20px;padding:3px 8px;font-size:11px;font-weight:500}
-.tup{font-size:11px;font-weight:500;color:#be123c}
-.tdn{font-size:11px;font-weight:500;color:#0369a1}
-.tsm{font-size:11px;color:var(--text-muted)}
-.chart-cell{width:240px}
-.chart-wrap{width:100%;height:80px;cursor:pointer}
-.no-data{font-size:11px;color:var(--text-muted)}
-.empty-msg{text-align:center;padding:20px;color:var(--text-muted);font-size:12px}
-.footer{text-align:center;margin-top:40px;font-size:11px;color:var(--text-muted);padding-top:20px;border-top:0.5px solid var(--border-light)}
-.loading{text-align:center;padding:60px;color:var(--text-muted);font-size:13px}
-</style>
-</head>
-<body>
-<div class="site-wrap">
+"""
+ステラプレイヤー ランキングスクレイパー
+- 毎日23:30 JST に自動実行
+- ランキング取得 + 履歴蓄積 + 新着CSV自動更新
+"""
 
-<div class="header">
-    <div class="header-icon">🌸</div>
-    <div>
-        <div class="header-title">ステラプレイヤー ランキング分析</div>
-        <div class="header-sub">オトメ向けボイス・音声作品データ</div>
-    </div>
-    <div class="header-update" id="header-update">🔄 毎日23:30頃更新 ／ 読込中...</div>
-</div>
+import json, os, re, csv
+from datetime import datetime, timezone, timedelta
+from playwright.sync_api import sync_playwright
 
-<div class="stat-row">
-    <div class="stat-card">
-        <div class="stat-label">📦 収録作品数</div>
-        <div class="stat-value" id="stat-count">―</div>
-        <div class="stat-sub" id="stat-count-sub">取得中</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-label">✨ 新着</div>
-        <div class="stat-value" id="stat-new">―</div>
-        <div class="stat-sub" id="stat-date">―</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-label">🔔 近日配信予定</div>
-        <div class="stat-value" id="stat-rising">―</div>
-        <div class="stat-sub">データあり・配信開始前</div>
-    </div>
-</div>
+JST = timezone(timedelta(hours=9))
 
-<div id="main-content"><div class="loading">⏳ データを読み込み中...</div></div>
+# ===== ユーティリティ =====
 
-<div class="footer">
-    ステラプレイヤー ランキング分析 ／ データは毎日23:30頃に自動更新されます
-</div>
+def load_prev_ranking(path="data/ranking.json"):
+    """前回のランキングを読んでtitle→rankのマップを返す"""
+    prev = {}
+    if not os.path.exists(path):
+        return prev
+    try:
+        with open(path, encoding="utf-8") as f:
+            d = json.load(f)
+        for cat, items in d.get("categories", {}).items():
+            prev[cat] = {}
+            for it in items:
+                if it.get("title"):
+                    prev[cat][it["title"]] = it.get("rank")
+    except Exception:
+        pass
+    return prev
 
-</div>
-<script>
-const DATA_URL = "data/ranking.json";
-const PINK = '#e8528a';
+def load_history(path="data/history.json"):
+    """ランク履歴を読み込む {cat: {product_id: [{date, rank}]}}"""
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
 
-async function loadData() {
-    try {
-        const res = await fetch(DATA_URL + "?t=" + Date.now());
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        render(await res.json());
-    } catch(e) {
-        document.getElementById("main-content").innerHTML =
-            `<div class="empty-msg">❌ データの読み込みに失敗しました。<br><small>${e.message}</small><br><br>Actions → Daily Ranking Scrape → Run workflow を実行してください。</div>`;
-    }
-}
+def save_history(history, path="data/history.json"):
+    """履歴を保存（30日分のみ保持）"""
+    cutoff = (datetime.now(JST) - timedelta(days=30)).strftime("%Y-%m-%d")
+    for cat in history:
+        for pid in history[cat]:
+            history[cat][pid] = [
+                h for h in history[cat][pid]
+                if h.get("date","") >= cutoff
+            ]
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(history, f, ensure_ascii=False, indent=2)
 
-function render(data) {
-    const dateStr = (data.updated||"").split(" ")[0]||"―";
-    document.getElementById("header-update").textContent = "🔄 毎日23:30頃更新 ／ " + (dateStr||"―");
+def load_products_csv(path="data/products.csv"):
+    """CSVをidキーの辞書で返す"""
+    products = {}
+    if not os.path.exists(path):
+        print(f"  CSV未発見: {path}")
+        return products
+    with open(path, encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            pid = str(row.get("id","")).strip()
+            if pid:
+                products[pid] = row
+    print(f"  CSV読み込み: {len(products)}件")
+    return products
 
-    const items = (data.categories||{}).GIRLS||[];
+def update_products_csv(new_items, path="data/products.csv"):
+    """
+    ①ランキング登場作品をCSVに追記
+    ②ランキング登場＝配信済みなのでPREORDER→ON_SALEに自動更新
+    """
+    if not os.path.exists(path):
+        return
+    # ランキング登場作品のIDセット
+    ranked_ids = {str(it.get("product_id","")) for it in new_items if it.get("product_id")}
 
-    const today = new Date();
-    const newItems = items.filter(it => {
-        if (!it.release_date) return false;
-        return (today - new Date(it.release_date)) / 86400000 <= 7;
-    });
+    rows = []
+    fieldnames = None
+    added = 0
+    updated = 0
+    existing_ids = set()
 
-    const rising = [...items]
-        .filter(it => it.prev_rank && it.rank && (it.prev_rank - it.rank) >= 10)
-        .sort((a,b) => (b.prev_rank-b.rank)-(a.prev_rank-a.rank))
-        .slice(0,3);
+    with open(path, encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        fieldnames = reader.fieldnames
+        for row in reader:
+            pid = str(row.get("id","")).strip()
+            existing_ids.add(pid)
+            # PREORDERがランキングに登場していたらON_SALEに更新
+            if pid in ranked_ids and row.get("販売ステータス") == "PREORDER":
+                row["販売ステータス"] = "ON_SALE"
+                updated += 1
+                print(f"  ステータス更新: {row.get('タイトル','')[:30]} PREORDER→ON_SALE")
+            rows.append(row)
 
-    document.getElementById("stat-count").textContent = data.total_products || items.length || "―";
-    document.getElementById("stat-count-sub").textContent = "2026年発売作品";
-    document.getElementById("stat-new").textContent = newItems.length || "―";
-    document.getElementById("stat-date").textContent = dateStr;
-    document.getElementById("stat-rising").textContent = (data.preorders||[]).length || "―";
+    # 新作を追記
+    for it in new_items:
+        pid = str(it.get("product_id",""))
+        if pid and pid not in existing_ids:
+            new_row = {k: "" for k in fieldnames}
+            new_row["id"] = pid
+            new_row["タイトル"] = it.get("title_raw","")
+            new_row["ブランド"] = it.get("circle","")
+            new_row["CV"] = it.get("cv","")
+            new_row["発売日"] = it.get("release_date","")
+            new_row["ジャンル"] = " / ".join(it.get("tags",[]))
+            new_row["サムネイルURL"] = it.get("img","")
+            new_row["販売ステータス"] = "ON_SALE"
+            rows.append(new_row)
+            existing_ids.add(pid)
+            added += 1
 
-    const top10 = items.slice(0,10); // APIはrank=2欠番等あるが先頭10件を表示
+    if added > 0 or updated > 0:
+        with open(path, "w", encoding="utf-8-sig", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(rows)
+        if added: print(f"  CSV追記: {added}件")
+        if updated: print(f"  CSV更新: {updated}件(PREORDER→ON_SALE)")
 
-    document.getElementById("main-content").innerHTML = `
-    <div class="section">
-        <div class="section-head">
-            <span style="font-size:16px">🔔</span>
-            <span class="section-title">近日配信予定</span>
-            <span class="section-badge">データあり・配信開始前</span>
-        </div>
-        <div class="table-card">
-        <table>
-            <colgroup>
-                <col style="width:150px">
-                <col style="width:auto">
-                <col style="width:10%">
-                <col style="width:12%">
-            </colgroup>
-            <thead>
-                <tr><th></th><th>タイトル / サークル</th><th>声優</th><th>発売予定日</th></tr>
-            </thead>
-            <tbody>
-            ${(data.preorders||[]).length ? (data.preorders||[]).map((it,i) => rowPreorder(it,i)).join("") : '<tr><td colspan="4" class="empty-msg">近日配信予定作品はありません</td></tr>'}
-            </tbody>
-        </table>
-        </div>
-    </div>
+# ===== スクレイピング =====
 
-    <div class="section">
-        <div class="section-head">
-            <span style="font-size:16px">🏆</span>
-            <span class="section-title">本日のランキング</span>
-            <span class="section-badge">TOP 10</span>
-        </div>
-        <div class="table-card">
-        <table>
-            <colgroup>
-                <col style="width:150px">
-                <col style="width:auto">
-                <col style="width:10%">
-                <col style="width:7%">
-                <col style="width:28%">
-            </colgroup>
-            <thead>
-                <tr><th></th><th>タイトル / サークル</th><th>声優</th><th>推移</th><th class="chart-cell">推移グラフ（30日）</th></tr>
-            </thead>
-            <tbody>
-            ${top10.length ? top10.map((it,i) => rowRanking(it,i)).join("") : '<tr><td colspan="5" class="empty-msg">データがありません</td></tr>'}
-            </tbody>
-        </table>
-        </div>
-    </div>`;
+def extract_cv_from_title(title):
+    m = re.search(r'[（(]CV[：:]\s*([^）)]+)[）)]', title)
+    return m.group(1).strip() if m else ""
 
-    // グラフ描画
-    document.querySelectorAll('canvas[data-idx]').forEach(c => {
-        drawChart(c.id, JSON.parse(c.dataset.history||'[]'), c.dataset.rank, parseInt(c.dataset.displayRank)||null);
-    });
-}
-
-function rankBadge(rank, i) {
-    // 表示は連番、バッジ色はAPIのrank値で決定
-    const displayNum = i + 1;
-    const cls = rank===1?'r1':rank===2?'r2':rank===3?'r3':'rn';
-    return `<span class="rb ${cls}">${displayNum}</span>`;
-}
-
-function coverEl(it, i, prefix) {
-    const badge = rankBadge(it.rank, i);
-    const cid = `${prefix}_${i+1}`;
-    const hist = JSON.stringify(it.history||[]);
-    if (it.img) {
-        return `<td class="thumb-wrap" style="padding:6px 4px 6px 8px">
-            <span class="thumb-rank">${badge}</span>
-            <a href="${esc(it.link||'#')}" target="_blank" rel="noopener">
-                <img src="${esc(it.img)}" alt="${esc(it.title)}" onerror="this.style.background='#f0d4e4';this.removeAttribute('src')">
-            </a>
-        </td>`;
-    }
-    return `<td class="thumb-wrap" style="padding:6px 4px 6px 8px;background:#f8d8e8">
-        <span class="thumb-rank">${badge}</span>
-    </td>`;
-}
-
-function tagsHtml(tags) {
-    if (!tags||!tags.length) return "";
-    return `<div class="genres">${tags.slice(0,8).map(t=>`<span class="gtag">${esc(t)}</span>`).join("")}</div>`;
-}
-
-
-function rowPreorder(it, i) {
-    const badge = `<span class="rb rn">${i+1}</span>`;
-    const cover = it.img
-        ? `<td class="thumb-wrap" style="padding:6px 4px 6px 8px">
-            <span class="thumb-rank">${badge}</span>
-            <a href="${esc(it.link||'#')}" target="_blank" rel="noopener">
-                <img src="${esc(it.img)}" alt="${esc(it.title)}" onerror="this.style.background='#f0d4e4';this.removeAttribute('src')">
-            </a>
-           </td>`
-        : `<td class="thumb-wrap" style="padding:6px 4px 6px 8px;background:#f8d8e8">
-            <span class="thumb-rank">${badge}</span>
-           </td>`;
-    const bonus = it.has_bonus ? `<span class="section-badge" style="background:#ecfdf5;color:#065f46;border-color:#6ee7b7">特典あり</span>` : '';
-    return `<tr>
-        ${cover}
-        <td class="title-cell">
-            <div class="work-title"><a href="${esc(it.link||'#')}" target="_blank" rel="noopener">${esc(it.title)}</a> ${bonus}</div>
-            <div class="work-circle"><span class="work-date">${esc(it.streaming_date||'')}</span>${esc(it.circle||'')}</div>
-            ${it.tags&&it.tags.length?`<div class="genres">${it.tags.slice(0,6).map(t=>`<span class="gtag">${esc(t)}</span>`).join('')}</div>`:''}
-        </td>
-        <td style="font-size:11px;color:var(--text-sub)">${esc(it.cv||'')}</td>
-        <td style="font-size:12px;color:var(--rose-800);font-weight:500">${esc(it.release_date||'')}</td>
-    </tr>`;
-}
-
-function rowRising(it, i) {
-    const diff = (it.prev_rank&&it.rank) ? it.prev_rank-it.rank : 0;
-    const cid = `rc_${i+1}`;
-    return `<tr>
-        ${coverEl(it,i,'rc')}
-        <td class="title-cell">
-            <div class="work-title"><a href="${esc(it.link||'#')}" target="_blank" rel="noopener">${esc(it.title)}</a></div>
-            <div class="work-circle"><span class="work-date">${esc(it.release_date||'')}</span>${esc(it.circle||'')}</div>
-            ${tagsHtml(it.tags)}
-        </td>
-        <td style="font-size:11px;color:var(--text-sub)">${esc(it.cv||'')}</td>
-        <td><span class="rise-pill">▲${diff}位UP</span></td>
-        <td class="chart-cell"><canvas id="${cid}" class="chart-wrap" data-idx="${i}" data-history='${JSON.stringify(it.history||[])}' data-rank="${it.rank||i+1}"></canvas></td>
-    </tr>`;
-}
-
-function trendHtml(it) {
-    if (!it.prev_rank||!it.rank) return `<span class="tsm">－</span>`;
-    const d = it.prev_rank-it.rank;
-    if (d>0) return `<span class="tup">▲${d}</span>`;
-    if (d<0) return `<span class="tdn">▼${Math.abs(d)}</span>`;
-    return `<span class="tsm">－</span>`;
-}
-
-function rowRanking(it, i) {
-    const cid = `wc_${i+1}`;
-    return `<tr>
-        ${coverEl(it,i,'wc')}
-        <td class="title-cell">
-            <div class="work-title"><a href="${esc(it.link||'#')}" target="_blank" rel="noopener">${esc(it.title)}</a></div>
-            <div class="work-circle"><span class="work-date">${esc(it.release_date||'')}</span>${esc(it.circle||'')}</div>
-            ${tagsHtml(it.tags)}
-        </td>
-        <td style="font-size:11px;color:var(--text-sub)">${esc(it.cv||'')}</td>
-        <td>${trendHtml(it)}</td>
-        <td class="chart-cell"><canvas id="${cid}" class="chart-wrap" data-idx="${i}" data-history='${JSON.stringify(it.history||[])}' data-rank="${it.rank||0}" data-display-rank="${i+1}"></canvas></td>
-    </tr>`;
-}
-
-function drawChart(canvasId, history, currentRank, displayRank) {
-    const ctx = document.getElementById(canvasId);
-    if (!ctx) return;
-
-    // 過去30日分のラベルを生成
-    const labels = [];
-    const ranks = [];
-    const today = new Date();
-    for (let i=29; i>=0; i--) {
-        const d = new Date(today);
-        d.setDate(d.getDate()-i);
-        labels.push(d.toISOString().slice(0,10));
-        ranks.push(null);
-    }
-
-    if (history && history.length > 0) {
-        // historyのrank（APIの実値）をそのまま使う
-        history.forEach(h => {
-            const idx = labels.indexOf(h.date);
-            if (idx >= 0) ranks[idx] = h.rank;
-        });
-    }
-
-    // 今日のデータ: displayRank（表示順）を優先、なければcurrentRank（APIのrank値）
-    const todayStr = today.toISOString().slice(0,10);
-    const todayIdx = labels.indexOf(todayStr);
-    if (todayIdx >= 0 && ranks[todayIdx] === null) {
-        if (displayRank) ranks[todayIdx] = displayRank;
-        else if (currentRank) ranks[todayIdx] = parseInt(currentRank)||null;
-    } else if (todayIdx >= 0 && ranks[todayIdx] !== null && displayRank) {
-        // historyにデータがあっても今日分はdisplayRankで上書き
-        ranks[todayIdx] = displayRank;
-    }
-
-    // 圏外扱い（rank>20）は21として表示
-    const disp = ranks.map(v => v===null ? null : (v > 20 ? 21 : v));
-    const isSingle = ranks.filter(v=>v!==null).length===1;
-
-    new Chart(ctx, {
-        type:'line',
-        data:{
-            labels,
-            datasets:[{
-                data:disp,
-                borderColor:PINK,
-                backgroundColor:'transparent',
-                borderWidth:1.5,
-                pointRadius:isSingle?5:2,
-                pointHoverRadius:6,
-                pointBackgroundColor:PINK,
-                fill:false,
-                tension:0.4,
-                spanGaps:false,
-            }]
-        },
-        options:{
-            responsive:true,
-            maintainAspectRatio:false,
-            layout:{padding:{top:6,left:2}},
-            interaction:{mode:'index',intersect:false},
-            scales:{
-                y:{
-                    reverse:true,
-                    min:0,
-                    max:22,
-                    ticks:{
-                        font:{size:11},
-                        color:'#b8829a',
-                        includeBounds:false,
-                        callback:v=>{
-                            if(v===1)return'1位';
-                            if(v===5)return'5位';
-                            if(v===10)return'10位';
-                            if(v===21)return'圏外';
-                            return null;
-                        }
-                    },
-                    beforeFit:axis=>{
-                        axis.ticks=[
-                            {value:1,label:'1位'},
-                            {value:5,label:'5位'},
-                            {value:10,label:'10位'},
-                            {value:21,label:'圏外'},
-                        ];
-                    },
-                    grid:{color:'rgba(232,82,138,0.07)'},
-                    border:{display:false}
+def fetch_ranking(page):
+    return page.evaluate("""
+        async () => {
+            const res = await fetch('https://api.stellaplayer.jp/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Origin': 'https://www.stellaplayer.jp',
+                    'Referer': 'https://www.stellaplayer.jp/',
                 },
-                x:{
-                    ticks:{font:{size:9},color:'#b8829a',maxTicksLimit:4},
-                    grid:{display:false},
-                    border:{display:false}
-                }
-            },
-            plugins:{
-                legend:{display:false},
-                tooltip:{
-                    enabled:true,
-                    mode:'index',
-                    intersect:false,
-                    callbacks:{
-                        label:c=>{
-                            const raw=ranks[c.dataIndex];
-                            if(raw===null||raw===undefined)return'';
-                            if(raw>20)return'圏外';
-                            // 当日のデータはdisplayRank（表示順）を優先
-                            const todayStr2 = new Date().toISOString().slice(0,10);
-                            if(labels[c.dataIndex]===todayStr2 && displayRank) return displayRank+'位';
-                            return raw+'位';
-                        }
-                    },
-                    titleFont:{size:11},
-                    bodyFont:{size:12},
-                    padding:8,
-                    backgroundColor:'rgba(139,26,66,0.85)',
-                    titleColor:'#fde0e7',
-                    bodyColor:'#fff',
-                }
-            }
+                body: JSON.stringify({
+                    operationName: 'rankingPageRank',
+                    query: `query rankingPageRank($rankType: RankType!, $take: Int!) {
+  GIRLS: ranks(filter: {rank_type: $rankType, top_category: GIRLS, take: $take}) {
+    id rank product {
+      id name release_schedule publish_starts_at
+      converted_featured_images is_new is_online_only
+      brand { id name }
+      genres { id name }
+    }
+  }
+  BL: ranks(filter: {rank_type: $rankType, top_category: BL, take: $take}) {
+    id rank product {
+      id name release_schedule publish_starts_at
+      converted_featured_images is_new is_online_only
+      brand { id name }
+      genres { id name }
+    }
+  }
+}`,
+                    variables: {rankType: 'DAILY', take: 20}
+                })
+            });
+            return res.json();
         }
-    });
-}
+    """)
 
-function esc(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;") }
+def extract_items(raw_list, prev_cat, products_csv, today_str):
+    items = []
+    for entry in (raw_list or []):
+        p = entry.get("product") or {}
+        product_id = str(p.get("id") or "")
+        csv_row = products_csv.get(product_id, {})
 
-loadData();
-</script>
-</body>
-</html>
+        title_raw = p.get("name") or csv_row.get("タイトル","") or ""
+        cv_from_title = extract_cv_from_title(title_raw)
+        title = re.sub(r'\s*[（(]CV[：:][^）)]+[）)]\s*', '', title_raw).strip()
+
+        cv = csv_row.get("CV","").strip() or cv_from_title
+
+        circle = csv_row.get("ブランド","").strip()
+        if not circle:
+            brand = p.get("brand") or {}
+            circle = brand.get("name","") if isinstance(brand,dict) else ""
+
+        img = csv_row.get("サムネイルURL","").strip()
+        if not img:
+            cfi = p.get("converted_featured_images") or {}
+            if isinstance(cfi, dict):
+                img = cfi.get("800x800_png") or cfi.get("200x200_png") or next(iter(cfi.values()),"")
+
+        release = ""
+        csv_date = csv_row.get("発売日","").strip()
+        if csv_date:
+            release = csv_date[:10]
+        else:
+            for key in ["release_schedule","publish_starts_at"]:
+                if p.get(key):
+                    release = str(p[key])[:10].split("T")[0].split(" ")[0]
+                    break
+
+        tags = []
+        csv_genres = csv_row.get("ジャンル","").strip()
+        if csv_genres:
+            tags = [g.strip() for g in csv_genres.split("/") if g.strip()]
+        else:
+            genres_raw = p.get("genres") or []
+            tags = [g.get("name","") for g in genres_raw if isinstance(g,dict) and g.get("name")]
+
+        rank = int(entry.get("rank") or 0)
+        link = f"https://www.stellaplayer.jp/product/{product_id}" if product_id else ""
+
+        if title:
+            items.append({
+                "rank": rank,
+                "title": title,
+                "title_raw": title_raw,
+                "circle": circle,
+                "cv": cv,
+                "img": img,
+                "release_date": release,
+                "tags": tags[:8],
+                "link": link,
+                "product_id": product_id,
+                "prev_rank": prev_cat.get(title),
+                "history": [],
+            })
+
+    items.sort(key=lambda x: x["rank"])
+    return items
+
+def update_history(history, cat, items, today_str):
+    """今日のランクを履歴に追記（表示順 1,2,3... で保存）"""
+    if cat not in history:
+        history[cat] = {}
+    for display_rank, it in enumerate(items, start=1):
+        pid = it.get("product_id","")
+        if not pid:
+            continue
+        if pid not in history[cat]:
+            history[cat][pid] = []
+        # 同日が既にあれば上書き
+        history[cat][pid] = [h for h in history[cat][pid] if h.get("date") != today_str]
+        # APIのrankではなく表示順（1,2,3...）で保存
+        history[cat][pid].append({"date": today_str, "rank": display_rank})
+        history[cat][pid].sort(key=lambda x: x["date"])
+        # 作品のhistoryフィールドにも付与
+        it["history"] = history[cat][pid]
+
+# ===== メイン =====
+
+def scrape(prev, products_csv, history, today_str):
+    results = {}
+    all_raw_items = []
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        context = browser.new_context(user_agent=(
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/124.0.0.0 Safari/537.36"
+        ))
+        page = context.new_page()
+
+        print("ランキングページを開いています...")
+        page.goto("https://www.stellaplayer.jp/ranking/GIRLS?rank_type=DAILY",
+                  wait_until="networkidle", timeout=60000)
+        page.wait_for_timeout(2000)
+
+        print("GraphQL APIを呼び出しています...")
+        api_result = fetch_ranking(page)
+        browser.close()
+
+    if not (api_result and "data" in api_result):
+        print(f"  APIエラー: {json.dumps(api_result)[:300]}")
+        return results
+
+    data = api_result["data"]
+    print(f"  取得カテゴリ: {list(data.keys())}")
+
+    for cat in ["GIRLS", "BL"]:
+        if cat not in data or not data[cat]:
+            continue
+        prev_cat = prev.get(cat, {})
+        items = extract_items(data[cat], prev_cat, products_csv, today_str)
+
+        # 履歴に今日のデータを追記
+        update_history(history, cat, items, today_str)
+
+        results[cat] = items
+        all_raw_items.extend(items)
+        print(f"  {cat}: {len(items)}件")
+        for it in items[:3]:
+            print(f"    rank={it['rank']} {it['title'][:25]} cv={it['cv']} tags={it['tags'][:3]} history={len(it['history'])}日分")
+
+    # CSVに新作を追記
+    update_products_csv(all_raw_items, "data/products.csv")
+
+    return results
+
+def main():
+    now = datetime.now(JST)
+    now_str = now.strftime("%Y/%m/%d %H:%M")
+    today_str = now.strftime("%Y-%m-%d")
+
+    prev = load_prev_ranking()
+    products_csv = load_products_csv("data/products.csv")
+    history = load_history()
+
+    print(f"スクレイピング開始... ({today_str})")
+    categories = scrape(prev, products_csv, history, today_str)
+
+    # ★ CSVはscrape()内で更新済みなので再読み込みして最新状態を使う
+    products_csv_latest = load_products_csv("data/products.csv")
+
+    # 近日配信予定作品をCSVから抽出（スクレイピング後の最新CSVを使用）
+    preorders = []
+    for pid, row in products_csv_latest.items():
+        if row.get("販売ステータス") == "PREORDER":
+            title_raw = row.get("タイトル","")
+            cv_m = re.search(r"[（(]CV[：:]\s*([^）)]+)[）)]", title_raw)
+            cv_name = cv_m.group(1).strip() if cv_m else row.get("CV","")
+            title = re.sub(r"\s*[（(]CV[：:][^）)]+[）)]\s*", "", title_raw).strip()
+            tags = [g.strip() for g in row.get("ジャンル","").split("/") if g.strip()]
+            preorders.append({
+                "id": pid,
+                "title": title,
+                "circle": row.get("ブランド",""),
+                "cv": cv_name,
+                "release_date": row.get("発売日","")[:10],
+                "streaming_date": row.get("配信開始日","")[:10],
+                "tags": tags[:8],
+                "img": row.get("サムネイルURL",""),
+                "link": f"https://www.stellaplayer.jp/product/{pid}",
+                "has_bonus": row.get("オリジナル特典","") == "True",
+            })
+    preorders.sort(key=lambda x: x["release_date"])
+
+    # 2026年発売・ON_SALEの作品数（最新CSVから集計）
+    # ※ 当日スクレイピングでPREORDER→ON_SALEに更新された分も含む
+    count_2026 = sum(
+        1 for row in products_csv_latest.values()
+        if row.get("販売ステータス") == "ON_SALE"
+        and str(row.get("発売日","")).startswith("2026")
+    )
+    print(f"  2026年発売ON_SALE: {count_2026}件, 近日配信予定: {len(preorders)}件")
+    output = {"updated": now_str, "total_products": count_2026, "preorders": preorders, "categories": categories}
+    os.makedirs("data", exist_ok=True)
+    with open("data/ranking.json", "w", encoding="utf-8") as f:
+        json.dump(output, f, ensure_ascii=False, indent=2)
+
+    # history.json 保存（30日分）
+    save_history(history)
+
+    total = sum(len(v) for v in categories.values())
+    print(f"\n✅ 保存完了: ranking.json ({now_str}) 合計{total}件")
+    print(f"✅ history.json 更新完了")
+
+if __name__ == "__main__":
+    main()
