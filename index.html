@@ -64,6 +64,95 @@ tbody tr:hover td{background:var(--rose-50)}
 .empty-msg{text-align:center;padding:20px;color:var(--text-muted);font-size:12px}
 .footer{text-align:center;margin-top:40px;font-size:11px;color:var(--text-muted);padding-top:20px;border-top:0.5px solid var(--border-light)}
 .loading{text-align:center;padding:60px;color:var(--text-muted);font-size:13px}
+
+/* ========== スマホ対応 ========== */
+@media (max-width: 640px) {
+    .site-wrap{padding:10px 8px 40px}
+
+    /* ヘッダー */
+    .header{padding:10px 12px;gap:8px;flex-wrap:wrap}
+    .header-title{font-size:13px}
+    .header-sub{font-size:10px}
+    .header-update{font-size:9px;padding:3px 8px;margin-left:0;width:100%}
+
+    /* 統計カード */
+    .stat-row{grid-template-columns:repeat(3,1fr);gap:5px}
+    .stat-card{padding:8px 6px}
+    .stat-value{font-size:18px}
+    .stat-label{font-size:8px}
+    .stat-sub{font-size:7px}
+
+    /* セクション */
+    .section-title{font-size:13px}
+    .section-badge{font-size:9px}
+    .section{margin-bottom:20px}
+    .section-head{margin-bottom:6px}
+
+    /* テーブル → カード形式 */
+    .table-card{overflow:visible}
+    table{display:block}
+    thead{display:none}
+    tbody{display:flex;flex-direction:column;gap:6px;padding:6px}
+    tbody tr{
+        display:grid;
+        grid-template-columns:110px 1fr;
+        grid-template-rows:auto auto auto auto;
+        background:#fff;border:0.5px solid var(--border);
+        border-radius:10px;overflow:hidden;padding:0
+    }
+    tbody td{border-bottom:none;padding:0;width:auto !important}
+    tbody tr:hover td{background:transparent}
+
+    /* サムネイル：左列 */
+    .thumb-wrap{
+        grid-column:1;
+        grid-row:1 / 5;
+        width:110px !important;min-width:110px;
+        padding:6px 4px 6px 6px;
+        position:relative
+    }
+    .thumb-wrap img{
+        width:100px;height:75px;
+        border-radius:6px;border:0.5px solid var(--border-light);
+        display:block;object-fit:cover
+    }
+    .thumb-rank{top:9px;left:9px}
+
+    /* タイトルセル：右列1行目 */
+    .title-cell{
+        grid-column:2;
+        grid-row:1;
+        padding:6px 8px 2px 4px !important;
+        display:block
+    }
+    .work-title{font-size:11px;white-space:normal;line-height:1.3}
+    .work-circle{font-size:9px;margin-top:1px}
+    .genres{margin-top:3px;gap:2px}
+    .gtag{font-size:8px;padding:1px 4px}
+
+    /* 声優・推移・上昇幅：右列 */
+    .cv-cell-td{
+        grid-column:2;
+        grid-row:2;
+        padding:0 8px 2px 4px !important;
+        font-size:10px
+    }
+    .trend-cell-td{
+        grid-column:2;
+        grid-row:3;
+        padding:0 8px 4px 4px !important
+    }
+    .rise-pill{font-size:9px;padding:2px 6px}
+    .tup,.tdn,.tsm{font-size:9px}
+
+    /* グラフ：全幅の最終行 */
+    .chart-cell{
+        grid-column:1 / 3;
+        grid-row:5;
+        width:100% !important
+    }
+    .chart-wrap{height:64px;padding:0 4px 6px;display:block}
+}
 </style>
 </head>
 <body>
@@ -139,7 +228,7 @@ function render(data) {
     document.getElementById("stat-count-sub").textContent = "2026年発売作品";
     document.getElementById("stat-new").textContent = newItems.length || "―";
     document.getElementById("stat-date").textContent = dateStr;
-    document.getElementById("stat-rising").textContent = (data.preorders||[]).length || "―";
+    document.getElementById("stat-rising").textContent = Math.min((data.preorders||[]).length, 2) || "―";
 
     const top10 = items.slice(0,10); // APIはrank=2欠番等あるが先頭10件を表示
 
@@ -162,7 +251,7 @@ function render(data) {
                 <tr><th></th><th>タイトル / サークル</th><th>声優</th><th>発売予定日</th></tr>
             </thead>
             <tbody>
-            ${(data.preorders||[]).length ? (data.preorders||[]).map((it,i) => rowPreorder(it,i)).join("") : '<tr><td colspan="4" class="empty-msg">近日配信予定作品はありません</td></tr>'}
+            ${(data.preorders||[]).length ? (data.preorders||[]).slice(0,2).map((it,i) => rowPreorder(it,i)).join("") : '<tr><td colspan="4" class="empty-msg">近日配信予定作品はありません</td></tr>'}
             </tbody>
         </table>
         </div>
@@ -249,8 +338,8 @@ function rowPreorder(it, i) {
             <div class="work-circle"><span class="work-date">${esc(it.streaming_date||'')}</span>${esc(it.circle||'')}</div>
             ${it.tags&&it.tags.length?`<div class="genres">${it.tags.slice(0,6).map(t=>`<span class="gtag">${esc(t)}</span>`).join('')}</div>`:''}
         </td>
-        <td style="font-size:11px;color:var(--text-sub)">${esc(it.cv||'')}</td>
-        <td style="font-size:12px;color:var(--rose-800);font-weight:500">${esc(it.release_date||'')}</td>
+        <td class="cv-cell-td" style="font-size:11px;color:var(--text-sub)">${esc(it.cv||'')}</td>
+        <td class="trend-cell-td" style="font-size:12px;color:var(--rose-800);font-weight:500">${esc(it.release_date||'')}</td>
     </tr>`;
 }
 
@@ -264,8 +353,8 @@ function rowRising(it, i) {
             <div class="work-circle"><span class="work-date">${esc(it.release_date||'')}</span>${esc(it.circle||'')}</div>
             ${tagsHtml(it.tags)}
         </td>
-        <td style="font-size:11px;color:var(--text-sub)">${esc(it.cv||'')}</td>
-        <td><span class="rise-pill">▲${diff}位UP</span></td>
+        <td class="cv-cell-td" style="font-size:11px;color:var(--text-sub)">${esc(it.cv||'')}</td>
+        <td class="trend-cell-td"><span class="rise-pill">▲${diff}位UP</span></td>
         <td class="chart-cell"><canvas id="${cid}" class="chart-wrap" data-idx="${i}" data-history='${JSON.stringify(it.history||[])}' data-rank="${it.rank||i+1}"></canvas></td>
     </tr>`;
 }
@@ -287,8 +376,8 @@ function rowRanking(it, i) {
             <div class="work-circle"><span class="work-date">${esc(it.release_date||'')}</span>${esc(it.circle||'')}</div>
             ${tagsHtml(it.tags)}
         </td>
-        <td style="font-size:11px;color:var(--text-sub)">${esc(it.cv||'')}</td>
-        <td>${trendHtml(it)}</td>
+        <td class="cv-cell-td" style="font-size:11px;color:var(--text-sub)">${esc(it.cv||'')}</td>
+        <td class="trend-cell-td">${trendHtml(it)}</td>
         <td class="chart-cell"><canvas id="${cid}" class="chart-wrap" data-idx="${i}" data-history='${JSON.stringify(it.history||[])}' data-rank="${it.rank||0}" data-display-rank="${i+1}"></canvas></td>
     </tr>`;
 }
