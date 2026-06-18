@@ -228,13 +228,23 @@ def extract_items(raw_list, prev_cat, products_csv, today_str):
     return items
 
 def update_history(history, cat, items, today_str):
-    """今日のランクを履歴に追記（表示順 1,2,3... で保存）"""
+    """
+    今日のランクを履歴に追記（表示順 1,2,3... で保存）。
+    一度でも履歴に記録された作品（=過去にランキング入りした作品）が
+    今日ランキング外だった場合は、圏外(31)として明示的に記録する
+    （がるまにと同じ仕様：データなし=圏外、発売前/未追跡=履歴なし）
+    """
     if cat not in history:
         history[cat] = {}
+
+    today_ranked_ids = set()
+
+    # ① 今日ランキングに入った作品を記録
     for display_rank, it in enumerate(items, start=1):
         pid = it.get("product_id","")
         if not pid:
             continue
+        today_ranked_ids.add(pid)
         if pid not in history[cat]:
             history[cat][pid] = []
         # 同日が既にあれば上書き
@@ -244,6 +254,18 @@ def update_history(history, cat, items, today_str):
         history[cat][pid].sort(key=lambda x: x["date"])
         # 作品のhistoryフィールドにも付与
         it["history"] = history[cat][pid]
+
+    # ② 過去に追跡対象だったが今日ランキング外の作品は「圏外(31)」を記録
+    for pid in list(history[cat].keys()):
+        if pid in today_ranked_ids:
+            continue
+        # 既に今日分が記録済みならスキップ（重複防止）
+        existing_dates = {h.get("date") for h in history[cat][pid]}
+        if today_str in existing_dates:
+            continue
+        history[cat][pid] = [h for h in history[cat][pid] if h.get("date") != today_str]
+        history[cat][pid].append({"date": today_str, "rank": 21})  # 21 = 取得した20件から外れた＝圏外
+        history[cat][pid].sort(key=lambda x: x["date"])
 
 # ===== メイン =====
 
