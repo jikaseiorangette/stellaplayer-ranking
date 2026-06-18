@@ -471,6 +471,9 @@ function drawChart(canvasId, history, currentRank, displayRank) {
                     border:{display:false}
                 },
                 x:{
+                    type:'category',
+                    min:labels[0],
+                    max:labels[labels.length-1],
                     ticks:{font:{size:9},color:'#b8829a',maxTicksLimit:4},
                     grid:{display:false},
                     border:{display:false}
