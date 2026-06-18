@@ -486,7 +486,7 @@ function drawChart(canvasId, history, currentRank, displayRank) {
                         label:c=>{
                             const raw=ranks[c.dataIndex];
                             if(raw===null||raw===undefined)return'';
-                            if(raw>30)return'圏外';
+                            if(raw>20)return'圏外';
                             // 当日のデータはdisplayRank（表示順）を優先
                             const todayStr2 = new Date().toISOString().slice(0,10);
                             if(labels[c.dataIndex]===todayStr2 && displayRank) return displayRank+'位';
