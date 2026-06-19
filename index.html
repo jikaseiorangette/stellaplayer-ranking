@@ -386,7 +386,7 @@ function drawChart(canvasId, history, currentRank, displayRank) {
     const ctx = document.getElementById(canvasId);
     if (!ctx) return;
 
-    // 過去30日分のラベルを生成
+    // がるまにと同じ：過去30日分のラベル・rankを生成
     const labels = [];
     const ranks = [];
     const today = new Date();
@@ -398,25 +398,20 @@ function drawChart(canvasId, history, currentRank, displayRank) {
     }
 
     if (history && history.length > 0) {
-        // historyのrank（APIの実値）をそのまま使う
         history.forEach(h => {
             const idx = labels.indexOf(h.date);
             if (idx >= 0) ranks[idx] = h.rank;
         });
     }
 
-    // 今日のデータ: displayRank（表示順）を優先、なければcurrentRank（APIのrank値）
+    // 今日のデータ: displayRank（表示順）を優先
     const todayStr = today.toISOString().slice(0,10);
     const todayIdx = labels.indexOf(todayStr);
-    if (todayIdx >= 0 && ranks[todayIdx] === null) {
+    if (todayIdx >= 0) {
         if (displayRank) ranks[todayIdx] = displayRank;
-        else if (currentRank) ranks[todayIdx] = parseInt(currentRank)||null;
-    } else if (todayIdx >= 0 && ranks[todayIdx] !== null && displayRank) {
-        // historyにデータがあっても今日分はdisplayRankで上書き
-        ranks[todayIdx] = displayRank;
+        else if (ranks[todayIdx] === null && currentRank) ranks[todayIdx] = parseInt(currentRank)||null;
     }
 
-    // 圏外扱い（rank>14）は15として表示（がるまにと同じ仕様）
     const disp = ranks.map(v => v===null ? null : (v > 14 ? 15 : v));
     const isSingle = ranks.filter(v=>v!==null).length===1;
 
@@ -444,64 +439,25 @@ function drawChart(canvasId, history, currentRank, displayRank) {
             interaction:{mode:'index',intersect:false},
             scales:{
                 y:{
-                    reverse:true,
-                    min:-1,
-                    max:17,
-                    ticks:{
-                        font:{size:11},
-                        color:'#b8829a',
-                        includeBounds:false,
-                        callback:v=>{
-                            if(v===1)return'1位';
-                            if(v===5)return'5位';
-                            if(v===10)return'10位';
-                            if(v===15)return'圏外';
-                            return null;
-                        }
+                    reverse:true,min:-1,max:17,
+                    ticks:{font:{size:11},color:'#b8829a',includeBounds:false,
+                        callback:v=>{if(v===1)return'1位';if(v===5)return'5位';if(v===10)return'10位';if(v===15)return'圏外';return null}
                     },
-                    beforeFit:axis=>{
-                        axis.ticks=[
-                            {value:1,label:'1位'},
-                            {value:5,label:'5位'},
-                            {value:10,label:'10位'},
-                            {value:15,label:'圏外'},
-                        ];
-                    },
-                    grid:{color:'rgba(232,82,138,0.07)'},
-                    border:{display:false}
+                    beforeFit:axis=>{axis.ticks=[{value:1,label:'1位'},{value:5,label:'5位'},{value:10,label:'10位'},{value:15,label:'圏外'}]},
+                    grid:{color:'rgba(232,82,138,0.07)'},border:{display:false}
                 },
                 x:{
-                    type:'category',
-                    min:labels[0],
-                    max:labels[labels.length-1],
                     ticks:{font:{size:9},color:'#b8829a',maxTicksLimit:4},
-                    grid:{display:false},
-                    border:{display:false}
+                    grid:{display:false},border:{display:false}
                 }
             },
             plugins:{
                 legend:{display:false},
                 tooltip:{
-                    enabled:true,
-                    mode:'index',
-                    intersect:false,
-                    callbacks:{
-                        label:c=>{
-                            const raw=ranks[c.dataIndex];
-                            if(raw===null||raw===undefined)return'';
-                            if(raw>20)return'圏外';
-                            // 当日のデータはdisplayRank（表示順）を優先
-                            const todayStr2 = new Date().toISOString().slice(0,10);
-                            if(labels[c.dataIndex]===todayStr2 && displayRank) return displayRank+'位';
-                            return raw+'位';
-                        }
-                    },
-                    titleFont:{size:11},
-                    bodyFont:{size:12},
-                    padding:8,
-                    backgroundColor:'rgba(139,26,66,0.85)',
-                    titleColor:'#fde0e7',
-                    bodyColor:'#fff',
+                    enabled:true,mode:'index',intersect:false,
+                    callbacks:{label:c=>{const raw=ranks[c.dataIndex];if(raw===null||raw===undefined)return'';if(raw>30)return'圏外';const todayStr2=new Date().toISOString().slice(0,10);if(labels[c.dataIndex]===todayStr2&&displayRank)return displayRank+'位';return raw+'位'}},
+                    titleFont:{size:11},bodyFont:{size:12},padding:8,
+                    backgroundColor:'rgba(139,26,66,0.85)',titleColor:'#fde0e7',bodyColor:'#fff',
                 }
             }
         }
