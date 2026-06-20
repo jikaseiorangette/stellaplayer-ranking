@@ -1,5 +1,5 @@
 {
-  "updated": "2026/06/20 01:59",
+  "updated": "2026/06/21 01:00",
   "total_products": 77,
   "preorders": [
     {
@@ -83,33 +83,6 @@
     "GIRLS": [
       {
         "rank": 1,
-        "title": "深夜残業Ⅱ ～スパダリ社長・藤木礼央のプロポーズ～【ステラワース限定版】",
-        "title_raw": "深夜残業Ⅱ ～スパダリ社長・藤木礼央のプロポーズ～(CV：土門熱)【ステラワース限定版】",
-        "circle": "Queen Lily",
-        "cv": "土門熱",
-        "img": "https://api.stellaplayer.jp/media/11239/conversions/09e6c364-2aea-4f90-81fc-e112b9c0cf48-800x800_png.png",
-        "release_date": "2025-08-25",
-        "tags": [
-          "上司",
-          "恋人",
-          "あまあま",
-          "スパダリ",
-          "社長",
-          "オフィス",
-          "職場"
-        ],
-        "link": "https://www.stellaplayer.jp/product/2421",
-        "product_id": "2421",
-        "prev_rank": null,
-        "history": [
-          {
-            "date": "2026-06-20",
-            "rank": 1
-          }
-        ]
-      },
-      {
-        "rank": 2,
         "title": "惑溺のアンドロマリウス ～Codename: Null～",
         "title_raw": "惑溺のアンドロマリウス ～Codename: Null～(CV：佐和真中)",
         "circle": "ステラワース",
@@ -122,152 +95,215 @@
         ],
         "link": "https://www.stellaplayer.jp/product/2706",
         "product_id": "2706",
-        "prev_rank": null,
+        "prev_rank": 2,
         "history": [
           {
             "date": "2026-06-20",
+            "rank": 2
+          },
+          {
+            "date": "2026-06-21",
+            "rank": 1
+          }
+        ]
+      },
+      {
+        "rank": 2,
+        "title": "お見合い恋愛のスゝメ case.2 小宮勇斗",
+        "title_raw": "お見合い恋愛のスゝメ case.2 小宮勇斗(CV：二枚貝ムール)",
+        "circle": "Chouette",
+        "cv": "二枚貝ムール",
+        "img": "https://api.stellaplayer.jp/media/1386/conversions/a4288d2f-684e-4270-b63b-906bd84ad83e-800x800_png.png",
+        "release_date": "2024-03-14",
+        "tags": [
+          "同級生",
+          "純愛"
+        ],
+        "link": "https://www.stellaplayer.jp/product/162",
+        "product_id": "162",
+        "prev_rank": null,
+        "history": [
+          {
+            "date": "2026-06-21",
             "rank": 2
           }
         ]
       },
       {
         "rank": 3,
-        "title": "オトナカレシ White",
-        "title_raw": "オトナカレシ White(CV：皇帝)",
-        "circle": "ステラワース",
-        "cv": "皇帝",
-        "img": "https://api.stellaplayer.jp/media/92/conversions/510e6d42-ab40-47e3-942b-9cda2b817e22-800x800_png.png",
-        "release_date": "2015-08-28",
+        "title": "部下、拾いました。",
+        "title_raw": "部下、拾いました。(CV：テトラポット登)",
+        "circle": "Chouette",
+        "cv": "テトラポット登",
+        "img": "https://api.stellaplayer.jp/media/1328/conversions/8f984b70-5061-47ac-a728-bbcef1dce5b0-800x800_png.png",
+        "release_date": "2024-03-14",
         "tags": [
-          "恋人",
-          "ラブラブ",
-          "オフィス",
-          "職場"
+          "部下",
+          "同棲",
+          "同居",
+          "コメディ"
         ],
-        "link": "https://www.stellaplayer.jp/product/19",
-        "product_id": "19",
+        "link": "https://www.stellaplayer.jp/product/184",
+        "product_id": "184",
         "prev_rank": null,
         "history": [
           {
-            "date": "2026-06-20",
+            "date": "2026-06-21",
             "rank": 3
           }
         ]
       },
       {
         "rank": 4,
-        "title": "オトナカレシ Black",
-        "title_raw": "オトナカレシ Black(CV：皇帝)",
-        "circle": "ステラワース",
-        "cv": "皇帝",
-        "img": "https://api.stellaplayer.jp/media/96/conversions/dffa18b9-e020-4e2d-86a9-57b69c13cc98-800x800_png.png",
-        "release_date": "2015-08-28",
+        "title": "お仕事恋愛のスゝメ　case1. 峰川伸",
+        "title_raw": "お仕事恋愛のスゝメ　case1. 峰川伸(CV：二枚貝ムール)",
+        "circle": "Chouette",
+        "cv": "二枚貝ムール",
+        "img": "https://api.stellaplayer.jp/media/1532/conversions/4744b5df-a9e1-42f5-b0fb-e00c2aa430a3-800x800_png.png",
+        "release_date": "2024-03-14",
         "tags": [
-          "恋人",
-          "執着",
-          "オフィス",
-          "職場"
+          "純愛"
         ],
-        "link": "https://www.stellaplayer.jp/product/20",
-        "product_id": "20",
+        "link": "https://www.stellaplayer.jp/product/193",
+        "product_id": "193",
         "prev_rank": null,
         "history": [
           {
-            "date": "2026-06-20",
+            "date": "2026-06-21",
             "rank": 4
           }
         ]
       },
       {
         "rank": 5,
-        "title": "HONEY TRIP －恋愛小説家と恋愛中－【ステラワース限定版】",
-        "title_raw": "HONEY TRIP －恋愛小説家と恋愛中－(CV：千渡レナド)【ステラワース限定版】",
-        "circle": "iris quartz",
-        "cv": "千渡レナド",
-        "img": "https://api.stellaplayer.jp/media/3000/conversions/4dcc3d15-21cb-4c0d-8775-ac6ffb9d1ad4-800x800_png.png",
+        "title": "ScramBle2 〜許嫁S兄弟と刺激的争奪3P〜",
+        "title_raw": "ScramBle2 〜許嫁S兄弟と刺激的争奪3P〜(CV：櫻井真人)",
+        "circle": "GOLD",
+        "cv": "櫻井真人",
+        "img": "https://api.stellaplayer.jp/media/3329/conversions/699ffc07-de48-4918-ab18-f59ebb85aed9-800x800_png.png",
         "release_date": "2024-03-14",
         "tags": [
-          "恋人",
-          "あまあま",
-          "純愛"
+          "上司",
+          "俺様",
+          "ハイスペ"
         ],
-        "link": "https://www.stellaplayer.jp/product/530",
-        "product_id": "530",
+        "link": "https://www.stellaplayer.jp/product/559",
+        "product_id": "559",
         "prev_rank": null,
         "history": [
           {
-            "date": "2026-06-20",
+            "date": "2026-06-21",
             "rank": 5
           }
         ]
       },
       {
         "rank": 6,
-        "title": "「淫魔」【ステラワース限定版】マニアな誘惑・ウブな誘惑",
-        "title_raw": "「淫魔」【ステラワース限定版】マニアな誘惑・ウブな誘惑",
-        "circle": "Velvet Voice",
-        "cv": "沖野靖広",
-        "img": "https://api.stellaplayer.jp/media/7470/conversions/883406a7-8699-427d-ad66-41b7dec0dabc-800x800_png.png",
-        "release_date": "2024-04-26",
+        "title": "ポリス旦那さま-サイバー犯罪捜査官・如月瑛智-【ステラワース限定版】",
+        "title_raw": "ポリス旦那さま-サイバー犯罪捜査官・如月瑛智-(CV：土門熱)【ステラワース限定版】",
+        "circle": "バニラレシピ",
+        "cv": "土門熱",
+        "img": "https://api.stellaplayer.jp/media/4388/conversions/afae72dd-244e-4fc7-be57-1ef570863be8-800x800_png.png",
+        "release_date": "2024-03-14",
         "tags": [
+          "夫",
+          "旦那",
           "ラブラブ",
-          "あまあま",
-          "初体験",
-          "淫魔",
-          "インキュバス",
-          "ファンタジー"
+          "ヤキモチ",
+          "執着",
+          "嫉妬",
+          "警察",
+          "刑事"
         ],
-        "link": "https://www.stellaplayer.jp/product/1803",
-        "product_id": "1803",
+        "link": "https://www.stellaplayer.jp/product/1022",
+        "product_id": "1022",
         "prev_rank": null,
         "history": [
           {
-            "date": "2026-06-20",
+            "date": "2026-06-21",
             "rank": 6
           }
         ]
       },
       {
         "rank": 7,
-        "title": "黒弁護士の痴情 世界でいちばん重い純愛【ステラワース限定版】",
-        "title_raw": "黒弁護士の痴情 世界でいちばん重い純愛(CV：五日天峰)【ステラワース限定版】",
-        "circle": "蜜月",
-        "cv": "五日天峰",
-        "img": "https://api.stellaplayer.jp/media/9747/conversions/03954a98-5bf8-4faf-85af-46eaa4636559-800x800_png.png",
-        "release_date": "2025-01-31",
+        "title": "Rouge et Noir Maximum Bet ピットボス アーレン・クライヴ",
+        "title_raw": "Rouge et Noir Maximum Bet ピットボス アーレン・クライヴ(CV：テトラポット登)",
+        "circle": "花鏡",
+        "cv": "テトラポット登",
+        "img": "https://api.stellaplayer.jp/media/6028/conversions/f778f39a-1968-4e59-928c-b84d16011134-800x800_png.png",
+        "release_date": "2024-04-05",
         "tags": [
-          "ラブラブ",
-          "あまあま",
-          "スパダリ"
+          "恋人",
+          "警察",
+          "刑事",
+          "ヤクザ",
+          "裏社会",
+          "ファンタジー"
         ],
-        "link": "https://www.stellaplayer.jp/product/2170",
-        "product_id": "2170",
+        "link": "https://www.stellaplayer.jp/product/1340",
+        "product_id": "1340",
         "prev_rank": null,
         "history": [
           {
-            "date": "2026-06-20",
+            "date": "2026-06-21",
             "rank": 7
           }
         ]
       },
       {
         "rank": 8,
-        "title": "a week before anniversary ～これからの二人～",
-        "title_raw": "a week before anniversary ～これからの二人～(CV：佐和真中)",
-        "circle": "ステラワース",
-        "cv": "佐和真中",
-        "img": "https://api.stellaplayer.jp/media/10020/conversions/0d1019ae-1c4d-4169-a204-d057fd3dcbc8-800x800_png.png",
-        "release_date": "2025-03-14",
+        "title": "ポリネシアン・ラヴ 永森伊央【ステラワース限定版】",
+        "title_raw": "ポリネシアン・ラヴ 永森伊央(CV：土門熱)【ステラワース限定版】",
+        "circle": "バニラレシピ",
+        "cv": "土門熱",
+        "img": "https://api.stellaplayer.jp/media/11745/conversions/65b58862-aeb9-459d-a4fb-64f5d2301280-800x800_png.png",
+        "release_date": "2025-10-15",
         "tags": [
-          "恋人"
+          "幼なじみ",
+          "年上",
+          "夫",
+          "旦那",
+          "ラブラブ",
+          "イチャイチャ",
+          "溺愛",
+          "初体験"
         ],
-        "link": "https://www.stellaplayer.jp/product/2233",
-        "product_id": "2233",
+        "link": "https://www.stellaplayer.jp/product/2433",
+        "product_id": "2433",
         "prev_rank": null,
         "history": [
           {
-            "date": "2026-06-20",
+            "date": "2026-06-21",
             "rank": 8
+          }
+        ]
+      },
+      {
+        "rank": 9,
+        "title": "抱かれたい男No.1は本命だけに振り向いてもらえない〜激重甘やかしえっちで調教されるのでスキャンダルにも動じません！?〜",
+        "title_raw": "抱かれたい男No.1は本命だけに振り向いてもらえない〜激重甘やかしえっちで調教されるのでスキャンダルにも動じません！?〜(CV：主水Ash)",
+        "circle": "溺愛工房",
+        "cv": "主水Ash",
+        "img": "https://api.stellaplayer.jp/media/13505/conversions/25a65dfc-2c4c-4f2a-b467-f4424ce9c832-800x800_png.png",
+        "release_date": "2026-04-10",
+        "tags": [
+          "年上",
+          "ラブラブ",
+          "あまあま",
+          "純愛",
+          "溺愛",
+          "スパダリ",
+          "芸能人",
+          "役者"
+        ],
+        "link": "https://www.stellaplayer.jp/product/2707",
+        "product_id": "2707",
+        "prev_rank": null,
+        "history": [
+          {
+            "date": "2026-06-21",
+            "rank": 9
           }
         ]
       }
