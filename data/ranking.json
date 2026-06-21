@@ -1,5 +1,5 @@
 {
-  "updated": "2026/06/21 01:00",
+  "updated": "2026/06/22 01:15",
   "total_products": 77,
   "preorders": [
     {
@@ -83,122 +83,158 @@
     "GIRLS": [
       {
         "rank": 1,
-        "title": "惑溺のアンドロマリウス ～Codename: Null～",
-        "title_raw": "惑溺のアンドロマリウス ～Codename: Null～(CV：佐和真中)",
+        "title": "兄と幼馴染 ノワール",
+        "title_raw": "兄と幼馴染 ノワール(CV：イシイツタオ＆十利須我里)",
         "circle": "ステラワース",
-        "cv": "佐和真中",
-        "img": "https://api.stellaplayer.jp/media/13485/conversions/770129e6-2322-4095-bf18-e9ccdf961b4c-800x800_png.png",
-        "release_date": "2026-06-19",
+        "cv": "イシイツタオ / 十利須我里",
+        "img": "https://api.stellaplayer.jp/media/46/conversions/d2aad77b-6f52-4e93-9d97-e3a556584739-800x800_png.png",
+        "release_date": "2013-01-31",
         "tags": [
-          "純愛",
-          "ロマンス"
+          "兄"
         ],
-        "link": "https://www.stellaplayer.jp/product/2706",
-        "product_id": "2706",
-        "prev_rank": 2,
+        "link": "https://www.stellaplayer.jp/product/5",
+        "product_id": "5",
+        "prev_rank": null,
         "history": [
           {
-            "date": "2026-06-20",
-            "rank": 2
-          },
-          {
-            "date": "2026-06-21",
+            "date": "2026-06-22",
             "rank": 1
           }
         ]
       },
       {
         "rank": 2,
-        "title": "お見合い恋愛のスゝメ case.2 小宮勇斗",
-        "title_raw": "お見合い恋愛のスゝメ case.2 小宮勇斗(CV：二枚貝ムール)",
-        "circle": "Chouette",
-        "cv": "二枚貝ムール",
-        "img": "https://api.stellaplayer.jp/media/1386/conversions/a4288d2f-684e-4270-b63b-906bd84ad83e-800x800_png.png",
-        "release_date": "2024-03-14",
+        "title": "SEX DRIVE ～私の気だるい教育係・貴瀬一粋～",
+        "title_raw": "SEX DRIVE ～私の気だるい教育係・貴瀬一粋～(CV：土門熱)",
+        "circle": "ステラワース",
+        "cv": "土門熱",
+        "img": "https://api.stellaplayer.jp/media/207/conversions/ed2db62a-cbb3-4b41-a047-b8609eb320fc-800x800_png.png",
+        "release_date": "2020-12-04",
         "tags": [
-          "同級生",
-          "純愛"
+          "先輩",
+          "同僚"
         ],
-        "link": "https://www.stellaplayer.jp/product/162",
-        "product_id": "162",
+        "link": "https://www.stellaplayer.jp/product/47",
+        "product_id": "47",
         "prev_rank": null,
         "history": [
           {
+            "date": "2026-06-18",
+            "rank": 2
+          },
+          {
+            "date": "2026-06-19",
+            "rank": 21
+          },
+          {
+            "date": "2026-06-20",
+            "rank": 21
+          },
+          {
             "date": "2026-06-21",
+            "rank": 21
+          },
+          {
+            "date": "2026-06-22",
             "rank": 2
           }
         ]
       },
       {
         "rank": 3,
-        "title": "部下、拾いました。",
-        "title_raw": "部下、拾いました。(CV：テトラポット登)",
-        "circle": "Chouette",
-        "cv": "テトラポット登",
-        "img": "https://api.stellaplayer.jp/media/1328/conversions/8f984b70-5061-47ac-a728-bbcef1dce5b0-800x800_png.png",
-        "release_date": "2024-03-14",
+        "title": "SEX DRIVE ～私の油断ならない後輩・中邑陽介～",
+        "title_raw": "SEX DRIVE ～私の油断ならない後輩・中邑陽介～(CV：冬ノ熊肉)",
+        "circle": "ステラワース",
+        "cv": "冬ノ熊肉",
+        "img": "https://api.stellaplayer.jp/media/213/conversions/829578cc-4355-46bd-a3b9-51bb795bea14-800x800_png.png",
+        "release_date": "2020-12-04",
         "tags": [
-          "部下",
-          "同棲",
-          "同居",
-          "コメディ"
+          "後輩",
+          "同僚"
         ],
-        "link": "https://www.stellaplayer.jp/product/184",
-        "product_id": "184",
+        "link": "https://www.stellaplayer.jp/product/48",
+        "product_id": "48",
         "prev_rank": null,
         "history": [
           {
-            "date": "2026-06-21",
+            "date": "2026-06-22",
             "rank": 3
           }
         ]
       },
       {
         "rank": 4,
-        "title": "お仕事恋愛のスゝメ　case1. 峰川伸",
-        "title_raw": "お仕事恋愛のスゝメ　case1. 峰川伸(CV：二枚貝ムール)",
+        "title": "執事、拾いました。",
+        "title_raw": "執事、拾いました。(CV：土門熱)",
         "circle": "Chouette",
-        "cv": "二枚貝ムール",
-        "img": "https://api.stellaplayer.jp/media/1532/conversions/4744b5df-a9e1-42f5-b0fb-e00c2aa430a3-800x800_png.png",
+        "cv": "土門熱",
+        "img": "https://api.stellaplayer.jp/media/1342/conversions/90a6281a-b587-4054-8375-1a99bf1ec41f-800x800_png.png",
         "release_date": "2024-03-14",
         "tags": [
-          "純愛"
+          "ほのぼの",
+          "同棲",
+          "同居",
+          "執事"
         ],
-        "link": "https://www.stellaplayer.jp/product/193",
-        "product_id": "193",
+        "link": "https://www.stellaplayer.jp/product/206",
+        "product_id": "206",
         "prev_rank": null,
         "history": [
           {
-            "date": "2026-06-21",
+            "date": "2026-06-22",
             "rank": 4
           }
         ]
       },
       {
         "rank": 5,
-        "title": "ScramBle2 〜許嫁S兄弟と刺激的争奪3P〜",
-        "title_raw": "ScramBle2 〜許嫁S兄弟と刺激的争奪3P〜(CV：櫻井真人)",
-        "circle": "GOLD",
-        "cv": "櫻井真人",
-        "img": "https://api.stellaplayer.jp/media/3329/conversions/699ffc07-de48-4918-ab18-f59ebb85aed9-800x800_png.png",
+        "title": "めおとらいふ2",
+        "title_raw": "めおとらいふ2(CV：二枚貝ほっき)",
+        "circle": "Chouette",
+        "cv": "二枚貝ほっき",
+        "img": "https://api.stellaplayer.jp/media/1496/conversions/554ff2fd-b505-4cf6-809c-82c411ff47ee-800x800_png.png",
         "release_date": "2024-03-14",
         "tags": [
-          "上司",
-          "俺様",
-          "ハイスペ"
+          "夫",
+          "旦那",
+          "ラブラブ",
+          "ほのぼの"
         ],
-        "link": "https://www.stellaplayer.jp/product/559",
-        "product_id": "559",
+        "link": "https://www.stellaplayer.jp/product/208",
+        "product_id": "208",
         "prev_rank": null,
         "history": [
           {
-            "date": "2026-06-21",
+            "date": "2026-06-22",
             "rank": 5
           }
         ]
       },
       {
         "rank": 6,
+        "title": "狡猾トラップ～？？？×キケンな男～【ステラワース限定版】",
+        "title_raw": "狡猾トラップ～？？？×キケンな男～(CV：土門熱)【ステラワース限定版】",
+        "circle": "バニラレシピ",
+        "cv": "土門熱",
+        "img": "https://api.stellaplayer.jp/media/4206/conversions/7fd4668b-0b38-4c38-9fbf-a124db9b4d23-800x800_png.png",
+        "release_date": "2024-03-14",
+        "tags": [
+          "ラブラブ",
+          "あまあま",
+          "プレイボーイ"
+        ],
+        "link": "https://www.stellaplayer.jp/product/942",
+        "product_id": "942",
+        "prev_rank": null,
+        "history": [
+          {
+            "date": "2026-06-22",
+            "rank": 6
+          }
+        ]
+      },
+      {
+        "rank": 7,
         "title": "ポリス旦那さま-サイバー犯罪捜査官・如月瑛智-【ステラワース限定版】",
         "title_raw": "ポリス旦那さま-サイバー犯罪捜査官・如月瑛智-(CV：土門熱)【ステラワース限定版】",
         "circle": "バニラレシピ",
@@ -217,93 +253,360 @@
         ],
         "link": "https://www.stellaplayer.jp/product/1022",
         "product_id": "1022",
-        "prev_rank": null,
+        "prev_rank": 6,
         "history": [
           {
             "date": "2026-06-21",
             "rank": 6
-          }
-        ]
-      },
-      {
-        "rank": 7,
-        "title": "Rouge et Noir Maximum Bet ピットボス アーレン・クライヴ",
-        "title_raw": "Rouge et Noir Maximum Bet ピットボス アーレン・クライヴ(CV：テトラポット登)",
-        "circle": "花鏡",
-        "cv": "テトラポット登",
-        "img": "https://api.stellaplayer.jp/media/6028/conversions/f778f39a-1968-4e59-928c-b84d16011134-800x800_png.png",
-        "release_date": "2024-04-05",
-        "tags": [
-          "恋人",
-          "警察",
-          "刑事",
-          "ヤクザ",
-          "裏社会",
-          "ファンタジー"
-        ],
-        "link": "https://www.stellaplayer.jp/product/1340",
-        "product_id": "1340",
-        "prev_rank": null,
-        "history": [
+          },
           {
-            "date": "2026-06-21",
+            "date": "2026-06-22",
             "rank": 7
           }
         ]
       },
       {
         "rank": 8,
-        "title": "ポリネシアン・ラヴ 永森伊央【ステラワース限定版】",
-        "title_raw": "ポリネシアン・ラヴ 永森伊央(CV：土門熱)【ステラワース限定版】",
-        "circle": "バニラレシピ",
+        "title": "新婚なんです！ 楠本律【ステラワース限定版】",
+        "title_raw": "新婚なんです！ 楠本律(CV：土門熱)【ステラワース限定版】",
+        "circle": "スノゥドロップス",
         "cv": "土門熱",
-        "img": "https://api.stellaplayer.jp/media/11745/conversions/65b58862-aeb9-459d-a4fb-64f5d2301280-800x800_png.png",
-        "release_date": "2025-10-15",
+        "img": "https://api.stellaplayer.jp/media/5160/conversions/1c41e78f-401e-4075-aae8-3ff083801323-800x800_png.png",
+        "release_date": "2024-03-14",
         "tags": [
-          "幼なじみ",
-          "年上",
           "夫",
           "旦那",
           "ラブラブ",
-          "イチャイチャ",
-          "溺愛",
-          "初体験"
+          "あまあま",
+          "ほのぼの",
+          "純愛",
+          "同棲",
+          "同居"
         ],
-        "link": "https://www.stellaplayer.jp/product/2433",
-        "product_id": "2433",
+        "link": "https://www.stellaplayer.jp/product/1170",
+        "product_id": "1170",
         "prev_rank": null,
         "history": [
           {
-            "date": "2026-06-21",
+            "date": "2026-06-22",
             "rank": 8
           }
         ]
       },
       {
         "rank": 9,
-        "title": "抱かれたい男No.1は本命だけに振り向いてもらえない〜激重甘やかしえっちで調教されるのでスキャンダルにも動じません！?〜",
-        "title_raw": "抱かれたい男No.1は本命だけに振り向いてもらえない〜激重甘やかしえっちで調教されるのでスキャンダルにも動じません！?〜(CV：主水Ash)",
-        "circle": "溺愛工房",
-        "cv": "主水Ash",
-        "img": "https://api.stellaplayer.jp/media/13505/conversions/25a65dfc-2c4c-4f2a-b467-f4424ce9c832-800x800_png.png",
-        "release_date": "2026-04-10",
+        "title": "「大好きな彼とＨして腕まくらでピロートークされちゃうシリーズ」【ステラワース限定版】 年上彼氏とドライブデート先で♡編",
+        "title_raw": "「大好きな彼とＨして腕まくらでピロートークされちゃうシリーズ」【ステラワース限定版】 年上彼氏とドライブデート先で♡編",
+        "circle": "Velvet Voice",
+        "cv": "平井達矢",
+        "img": "https://api.stellaplayer.jp/media/5366/conversions/67777bcc-fb35-43ae-aa6d-e4e74578fea6-800x800_png.png",
+        "release_date": "2024-03-28",
         "tags": [
           "年上",
+          "恋人",
           "ラブラブ",
-          "あまあま",
-          "純愛",
-          "溺愛",
-          "スパダリ",
-          "芸能人",
-          "役者"
+          "あまあま"
         ],
-        "link": "https://www.stellaplayer.jp/product/2707",
-        "product_id": "2707",
+        "link": "https://www.stellaplayer.jp/product/1223",
+        "product_id": "1223",
         "prev_rank": null,
         "history": [
           {
-            "date": "2026-06-21",
+            "date": "2026-06-22",
             "rank": 9
+          }
+        ]
+      },
+      {
+        "rank": 10,
+        "title": "一期一会 Ⅱ 新堂あらた",
+        "title_raw": "一期一会 Ⅱ 新堂あらた(CV：土門熱)",
+        "circle": "GOLD",
+        "cv": "土門熱",
+        "img": "https://api.stellaplayer.jp/media/6133/conversions/6f3f452f-5efe-4c94-8b41-c385224c83d6-800x800_png.png",
+        "release_date": "2024-06-01",
+        "tags": [
+          "恋人",
+          "ラブラブ",
+          "ほのぼの"
+        ],
+        "link": "https://www.stellaplayer.jp/product/1375",
+        "product_id": "1375",
+        "prev_rank": null,
+        "history": [
+          {
+            "date": "2026-06-22",
+            "rank": 10
+          }
+        ]
+      },
+      {
+        "rank": 11,
+        "title": "「土門熱だらけ～ちょっと大胆になって♥～」【ステラワース限定版】",
+        "title_raw": "「土門熱だらけ～ちょっと大胆になって♥～」【ステラワース限定版】",
+        "circle": "Velvet Voice petit",
+        "cv": "土門熱",
+        "img": "https://api.stellaplayer.jp/media/7813/conversions/141678c3-287c-4b47-a111-ad56b371394e-800x800_png.png",
+        "release_date": "2024-04-26",
+        "tags": [
+          "恋人",
+          "ラブラブ",
+          "あまあま"
+        ],
+        "link": "https://www.stellaplayer.jp/product/1851",
+        "product_id": "1851",
+        "prev_rank": null,
+        "history": [
+          {
+            "date": "2026-06-22",
+            "rank": 11
+          }
+        ]
+      },
+      {
+        "rank": 12,
+        "title": "本当の貴方と愛し合う -弁護士の彼が歪んだ執着を曝け出す-【ステラプレイヤー限定版】",
+        "title_raw": "本当の貴方と愛し合う -弁護士の彼が歪んだ執着を曝け出す-(CV：土門熱)【ステラプレイヤー限定版】",
+        "circle": "Cranberry",
+        "cv": "土門熱",
+        "img": "https://api.stellaplayer.jp/media/7913/conversions/77f9fbf9-8dd4-4c4d-afdc-de2ed0760f62-800x800_png.png",
+        "release_date": "2024-05-30",
+        "tags": [
+          "年上",
+          "上司",
+          "ハイスペ",
+          "執着"
+        ],
+        "link": "https://www.stellaplayer.jp/product/1878",
+        "product_id": "1878",
+        "prev_rank": null,
+        "history": [
+          {
+            "date": "2026-06-22",
+            "rank": 12
+          }
+        ]
+      },
+      {
+        "rank": 13,
+        "title": "大人の初めて～エッチってこんなに嬉しくて気持ちよくなるの？～【ステラプレイヤー限定版】",
+        "title_raw": "大人の初めて～エッチってこんなに嬉しくて気持ちよくなるの？～(CV：土門熱)【ステラプレイヤー限定版】",
+        "circle": "Cranberry",
+        "cv": "土門熱",
+        "img": "https://api.stellaplayer.jp/media/10228/conversions/ade16a7c-89c4-4708-a9f9-c3dbeff9b540-800x800_png.png",
+        "release_date": "2025-04-08",
+        "tags": [
+          "先輩",
+          "ラブラブ",
+          "あまあま",
+          "ハイスペ"
+        ],
+        "link": "https://www.stellaplayer.jp/product/2254",
+        "product_id": "2254",
+        "prev_rank": null,
+        "history": [
+          {
+            "date": "2026-06-22",
+            "rank": 13
+          }
+        ]
+      },
+      {
+        "rank": 14,
+        "title": "深夜残業Ⅱ ～スパダリ社長・藤木礼央のプロポーズ～【ステラワース限定版】",
+        "title_raw": "深夜残業Ⅱ ～スパダリ社長・藤木礼央のプロポーズ～(CV：土門熱)【ステラワース限定版】",
+        "circle": "Queen Lily",
+        "cv": "土門熱",
+        "img": "https://api.stellaplayer.jp/media/11239/conversions/09e6c364-2aea-4f90-81fc-e112b9c0cf48-800x800_png.png",
+        "release_date": "2025-08-25",
+        "tags": [
+          "上司",
+          "恋人",
+          "あまあま",
+          "スパダリ",
+          "社長",
+          "オフィス",
+          "職場"
+        ],
+        "link": "https://www.stellaplayer.jp/product/2421",
+        "product_id": "2421",
+        "prev_rank": null,
+        "history": [
+          {
+            "date": "2026-06-20",
+            "rank": 1
+          },
+          {
+            "date": "2026-06-21",
+            "rank": 21
+          },
+          {
+            "date": "2026-06-22",
+            "rank": 14
+          }
+        ]
+      },
+      {
+        "rank": 15,
+        "title": "ポリネシアン・ラヴ 栗原七音【ステラワース限定版】",
+        "title_raw": "ポリネシアン・ラヴ 栗原七音(CV：河村眞人)【ステラワース限定版】",
+        "circle": "バニラレシピ",
+        "cv": "河村眞人",
+        "img": "https://api.stellaplayer.jp/media/11398/conversions/391dd7e6-29ec-49c5-8956-c06a00239ea5-800x800_png.png",
+        "release_date": "2025-09-17",
+        "tags": [
+          "年上",
+          "恋人",
+          "あまあま",
+          "イチャイチャ",
+          "溺愛",
+          "同棲",
+          "同居",
+          "日常"
+        ],
+        "link": "https://www.stellaplayer.jp/product/2431",
+        "product_id": "2431",
+        "prev_rank": null,
+        "history": [
+          {
+            "date": "2026-06-22",
+            "rank": 15
+          }
+        ]
+      },
+      {
+        "rank": 16,
+        "title": "おとなり以上、恋人未満 ～完璧幼馴染・はる兄の独占欲～【ステラワース特典SS付き】",
+        "title_raw": "おとなり以上、恋人未満 ～完璧幼馴染・はる兄の独占欲～(CV：猿飛総司)【ステラワース特典SS付き】",
+        "circle": "Honey Mellow",
+        "cv": "猿飛総司",
+        "img": "https://api.stellaplayer.jp/media/11528/conversions/2d6c4b0d-d607-4b42-bbe8-5f652d056a32-800x800_png.png",
+        "release_date": "2025-09-27",
+        "tags": [
+          "幼なじみ",
+          "年上",
+          "恋人",
+          "ラブラブ",
+          "あまあま",
+          "純愛",
+          "スパダリ",
+          "嫉妬"
+        ],
+        "link": "https://www.stellaplayer.jp/product/2463",
+        "product_id": "2463",
+        "prev_rank": null,
+        "history": [
+          {
+            "date": "2026-06-22",
+            "rank": 16
+          }
+        ]
+      },
+      {
+        "rank": 17,
+        "title": "あなたがいないとダメな人 ～完璧婚約者・王華編～【ステラプレイヤー限定特典付き】",
+        "title_raw": "あなたがいないとダメな人 ～完璧婚約者・王華編～(CV：土門熱)【ステラプレイヤー限定特典付き】",
+        "circle": "バニラレシピ",
+        "cv": "土門熱",
+        "img": "https://api.stellaplayer.jp/media/12732/conversions/be79f500-966e-4df2-9836-cff845173469-800x800_png.png",
+        "release_date": "2026-01-14",
+        "tags": [
+          "年下",
+          "恋人",
+          "あまあま",
+          "イチャイチャ",
+          "同棲",
+          "同居",
+          "ハイスペ",
+          "日常"
+        ],
+        "link": "https://www.stellaplayer.jp/product/2630",
+        "product_id": "2630",
+        "prev_rank": null,
+        "history": [
+          {
+            "date": "2026-06-22",
+            "rank": 17
+          }
+        ]
+      },
+      {
+        "rank": 18,
+        "title": "子犬かと思ったら粘着溺愛わんこでした ―絶倫種付け孕ませプレス♡執着子宮ファックでドロドロ溺愛―",
+        "title_raw": "子犬かと思ったら粘着溺愛わんこでした ―絶倫種付け孕ませプレス♡執着子宮ファックでドロドロ溺愛―(CV：富永修平)",
+        "circle": "Another LABEL",
+        "cv": "富永修平",
+        "img": "https://api.stellaplayer.jp/media/13295/conversions/33c1f50b-93d0-40df-805c-07aa69d26d7d-800x800_png.png",
+        "release_date": "2026-02-09",
+        "tags": [
+          "同棲",
+          "同居",
+          "ヤンデレ",
+          "執着"
+        ],
+        "link": "https://www.stellaplayer.jp/product/2693",
+        "product_id": "2693",
+        "prev_rank": null,
+        "history": [
+          {
+            "date": "2026-06-22",
+            "rank": 18
+          }
+        ]
+      },
+      {
+        "rank": 19,
+        "title": "惑溺のアンドロマリウス ～Codename: Null～",
+        "title_raw": "惑溺のアンドロマリウス ～Codename: Null～(CV：佐和真中)",
+        "circle": "ステラワース",
+        "cv": "佐和真中",
+        "img": "https://api.stellaplayer.jp/media/13485/conversions/770129e6-2322-4095-bf18-e9ccdf961b4c-800x800_png.png",
+        "release_date": "2026-06-19",
+        "tags": [
+          "純愛",
+          "ロマンス"
+        ],
+        "link": "https://www.stellaplayer.jp/product/2706",
+        "product_id": "2706",
+        "prev_rank": 1,
+        "history": [
+          {
+            "date": "2026-06-20",
+            "rank": 2
+          },
+          {
+            "date": "2026-06-21",
+            "rank": 1
+          },
+          {
+            "date": "2026-06-22",
+            "rank": 19
+          }
+        ]
+      },
+      {
+        "rank": 20,
+        "title": "【絶倫×耐久×ライバル同僚♡】Ｗｈｉｃｈ？《共通特典トラック付き》",
+        "title_raw": "【絶倫×耐久×ライバル同僚♡】Ｗｈｉｃｈ？(CV：冬ノ熊肉)《共通特典トラック付き》",
+        "circle": "Cranberry",
+        "cv": "冬ノ熊肉",
+        "img": "https://api.stellaplayer.jp/media/13729/conversions/279d30a1-7e39-46c3-a349-510101724898-800x800_png.png",
+        "release_date": "2026-05-28",
+        "tags": [
+          "同僚",
+          "恋人",
+          "ラブラブ",
+          "あまあま",
+          "オフィス",
+          "職場"
+        ],
+        "link": "https://www.stellaplayer.jp/product/2729",
+        "product_id": "2729",
+        "prev_rank": null,
+        "history": [
+          {
+            "date": "2026-06-22",
+            "rank": 20
           }
         ]
       }
