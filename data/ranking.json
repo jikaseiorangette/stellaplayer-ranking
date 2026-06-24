@@ -1,5 +1,5 @@
 {
-  "updated": "2026/06/24 12:29",
+  "updated": "2026/06/24 12:53",
   "total_products": 78,
   "preorders": [
     {
@@ -317,7 +317,7 @@
         ],
         "link": "https://www.stellaplayer.jp/product/2186",
         "product_id": "2186",
-        "prev_rank": null,
+        "prev_rank": 9,
         "history": [
           {
             "date": "2026-06-24",
@@ -342,7 +342,7 @@
         ],
         "link": "https://www.stellaplayer.jp/product/2254",
         "product_id": "2254",
-        "prev_rank": 9,
+        "prev_rank": 10,
         "history": [
           {
             "date": "2026-06-22",
@@ -377,7 +377,7 @@
         ],
         "link": "https://www.stellaplayer.jp/product/2457",
         "product_id": "2457",
-        "prev_rank": 10,
+        "prev_rank": 11,
         "history": [
           {
             "date": "2026-06-24",
@@ -400,7 +400,7 @@
         ],
         "link": "https://www.stellaplayer.jp/product/2706",
         "product_id": "2706",
-        "prev_rank": 11,
+        "prev_rank": 12,
         "history": [
           {
             "date": "2026-06-20",
@@ -445,7 +445,7 @@
         ],
         "link": "https://www.stellaplayer.jp/product/2707",
         "product_id": "2707",
-        "prev_rank": null,
+        "prev_rank": 13,
         "history": [
           {
             "date": "2026-06-21",
@@ -484,7 +484,7 @@
         ],
         "link": "https://www.stellaplayer.jp/product/2729",
         "product_id": "2729",
-        "prev_rank": 12,
+        "prev_rank": 14,
         "history": [
           {
             "date": "2026-06-22",
@@ -519,7 +519,7 @@
         ],
         "link": "https://www.stellaplayer.jp/product/2730",
         "product_id": "2730",
-        "prev_rank": 13,
+        "prev_rank": 15,
         "history": [
           {
             "date": "2026-06-24",
