@@ -40,14 +40,14 @@ def load_history(path="data/history.json"):
         return {}
 
 def save_history(history, path="data/history.json"):
-    """履歴を保存（30日分のみ保持）"""
-    cutoff = (datetime.now(JST) - timedelta(days=30)).strftime("%Y-%m-%d")
-    for cat in history:
-        for pid in history[cat]:
-            history[cat][pid] = [
-                h for h in history[cat][pid]
-                if h.get("date","") >= cutoff
-            ]
+    """履歴を保存（全期間保持）"""
+    # cutoff = (datetime.now(JST) - timedelta(days=30)).strftime("%Y-%m-%d")
+    # for cat in history:
+    #     for pid in history[cat]:
+    #         history[cat][pid] = [
+    #             h for h in history[cat][pid]
+    #             if h.get("date","") >= cutoff
+    #         ]
     with open(path, "w", encoding="utf-8") as f:
         json.dump(history, f, ensure_ascii=False, indent=2)
 
