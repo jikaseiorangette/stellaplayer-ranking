@@ -214,10 +214,8 @@ function render(data) {
     const items = (data.categories||{}).GIRLS||[];
 
     const today = new Date();
-    const newItems = items.filter(it => {
-        if (!it.release_date) return false;
-        return (today - new Date(it.release_date)) / 86400000 <= 7;
-    });
+    const todayStr = today.toISOString().slice(0, 10);
+    const newItems = items.filter(it => it.release_date === todayStr);
 
     const rising = [...items]
         .filter(it => it.prev_rank && it.rank && (it.prev_rank - it.rank) >= 10)
