@@ -222,6 +222,7 @@ def extract_items(raw_list, prev_cat, products_csv, today_str):
                 "product_id": product_id,
                 "prev_rank": prev_cat.get(title),
                 "history": [],
+                "is_new": release == today_str,
             })
 
     items.sort(key=lambda x: x["rank"])
