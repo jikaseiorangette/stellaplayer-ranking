@@ -344,10 +344,11 @@ function rowPreorder(it, i) {
 function rowRising(it, i) {
     const diff = (it.prev_rank&&it.rank) ? it.prev_rank-it.rank : 0;
     const cid = `rc_${i+1}`;
+    const newBadge = it.is_new ? `<span class="section-badge" style="background:#fef9c3;color:#854d0e;border-color:#fde047">🆕 新着</span>` : '';
     return `<tr>
         ${coverEl(it,i,'rc')}
         <td class="title-cell">
-            <div class="work-title"><a href="${esc(it.link||'#')}" target="_blank" rel="noopener">${esc(it.title)}</a></div>
+            <div class="work-title"><a href="${esc(it.link||'#')}" target="_blank" rel="noopener">${esc(it.title)}</a> ${newBadge}</div>
             <div class="work-circle"><span class="work-date">${esc(it.release_date||'')}</span>${esc(it.circle||'')}</div>
             ${tagsHtml(it.tags)}
         </td>
@@ -367,10 +368,11 @@ function trendHtml(it) {
 
 function rowRanking(it, i) {
     const cid = `wc_${i+1}`;
+    const newBadge = it.is_new ? `<span class="section-badge" style="background:#fef9c3;color:#854d0e;border-color:#fde047">🆕 新着</span>` : '';
     return `<tr>
         ${coverEl(it,i,'wc')}
         <td class="title-cell">
-            <div class="work-title"><a href="${esc(it.link||'#')}" target="_blank" rel="noopener">${esc(it.title)}</a></div>
+            <div class="work-title"><a href="${esc(it.link||'#')}" target="_blank" rel="noopener">${esc(it.title)}</a> ${newBadge}</div>
             <div class="work-circle"><span class="work-date">${esc(it.release_date||'')}</span>${esc(it.circle||'')}</div>
             ${tagsHtml(it.tags)}
         </td>
@@ -453,7 +455,7 @@ function drawChart(canvasId, history, currentRank, displayRank) {
                 legend:{display:false},
                 tooltip:{
                     enabled:true,mode:'index',intersect:false,
-                    callbacks:{label:c=>{const raw=ranks[c.dataIndex];if(raw===null||raw===undefined)return'';if(raw>30)return'圏外';const todayStr2=new Date().toISOString().slice(0,10);if(labels[c.dataIndex]===todayStr2&&displayRank)return displayRank+'位';return raw+'位'}},
+                    callbacks:{label:c=>{const raw=ranks[c.dataIndex];if(raw===null||raw===undefined)return'';if(raw>20)return'圏外';const todayStr2=new Date().toISOString().slice(0,10);if(labels[c.dataIndex]===todayStr2&&displayRank)return displayRank+'位';return raw+'位'}},
                     titleFont:{size:11},bodyFont:{size:12},padding:8,
                     backgroundColor:'rgba(139,26,66,0.85)',titleColor:'#fde0e7',bodyColor:'#fff',
                 }
