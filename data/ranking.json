@@ -1,5 +1,5 @@
 {
-  "updated": "2026/06/24 02:01",
+  "updated": "2026/06/24 11:54",
   "total_products": 78,
   "preorders": [
     {
@@ -80,16 +80,81 @@
         ],
         "link": "https://www.stellaplayer.jp/product/2720",
         "product_id": "2720",
-        "prev_rank": null,
+        "prev_rank": 1,
         "history": [
           {
             "date": "2026-06-24",
             "rank": 1
           }
-        ]
+        ],
+        "is_new": true
       },
       {
         "rank": 2,
+        "title": "ポリネシアン・ラヴ 永森伊央【ステラワース限定版】",
+        "title_raw": "ポリネシアン・ラヴ 永森伊央(CV：土門熱)【ステラワース限定版】",
+        "circle": "バニラレシピ",
+        "cv": "土門熱",
+        "img": "https://api.stellaplayer.jp/media/11745/conversions/65b58862-aeb9-459d-a4fb-64f5d2301280-800x800_png.png",
+        "release_date": "2025-10-15",
+        "tags": [
+          "幼なじみ",
+          "年上",
+          "夫",
+          "旦那",
+          "ラブラブ",
+          "イチャイチャ",
+          "溺愛",
+          "初体験"
+        ],
+        "link": "https://www.stellaplayer.jp/product/2433",
+        "product_id": "2433",
+        "prev_rank": 8,
+        "history": [
+          {
+            "date": "2026-06-21",
+            "rank": 8
+          },
+          {
+            "date": "2026-06-22",
+            "rank": 21
+          },
+          {
+            "date": "2026-06-23",
+            "rank": 21
+          },
+          {
+            "date": "2026-06-24",
+            "rank": 2
+          }
+        ],
+        "is_new": false
+      },
+      {
+        "rank": 3,
+        "title": "SEX DRIVE ～私の目が離せない後輩・中邑陽介～",
+        "title_raw": "SEX DRIVE ～私の目が離せない後輩・中邑陽介～(CV：冬ノ熊肉)",
+        "circle": "ステラワース",
+        "cv": "冬ノ熊肉",
+        "img": "https://api.stellaplayer.jp/media/289/conversions/33b21d78-65e0-4fd3-8972-00b1940fc6ec-800x800_png.png",
+        "release_date": "2022-03-25",
+        "tags": [
+          "後輩",
+          "同僚"
+        ],
+        "link": "https://www.stellaplayer.jp/product/70",
+        "product_id": "70",
+        "prev_rank": null,
+        "history": [
+          {
+            "date": "2026-06-24",
+            "rank": 3
+          }
+        ],
+        "is_new": false
+      },
+      {
+        "rank": 4,
         "title": "Secret eMotion 瀬尾瑞希【ステラワース限定版】",
         "title_raw": "Secret eMotion 瀬尾瑞希(CV：テトラポット登)【ステラワース限定版】",
         "circle": "みつぼみ",
@@ -102,16 +167,17 @@
         ],
         "link": "https://www.stellaplayer.jp/product/238",
         "product_id": "238",
-        "prev_rank": null,
+        "prev_rank": 2,
         "history": [
           {
             "date": "2026-06-24",
-            "rank": 2
+            "rank": 4
           }
-        ]
+        ],
+        "is_new": false
       },
       {
-        "rank": 3,
+        "rank": 5,
         "title": "Secret eMotion 双津宗鷹【ステラワース限定版】",
         "title_raw": "Secret eMotion 双津宗鷹(CV：河村眞人)【ステラワース限定版】",
         "circle": "みつぼみ",
@@ -127,16 +193,17 @@
         ],
         "link": "https://www.stellaplayer.jp/product/240",
         "product_id": "240",
-        "prev_rank": null,
+        "prev_rank": 3,
         "history": [
           {
             "date": "2026-06-24",
-            "rank": 3
+            "rank": 5
           }
-        ]
+        ],
+        "is_new": false
       },
       {
-        "rank": 4,
+        "rank": 6,
         "title": "再会 vol.3 遠距離",
         "title_raw": "再会 vol.3 遠距離(CV：冬ノ熊肉)",
         "circle": "GOLD",
@@ -150,7 +217,7 @@
         ],
         "link": "https://www.stellaplayer.jp/product/593",
         "product_id": "593",
-        "prev_rank": null,
+        "prev_rank": 4,
         "history": [
           {
             "date": "2026-06-18",
@@ -178,12 +245,13 @@
           },
           {
             "date": "2026-06-24",
-            "rank": 4
+            "rank": 6
           }
-        ]
+        ],
+        "is_new": false
       },
       {
-        "rank": 5,
+        "rank": 7,
         "title": "Dramatical Eden ～刺激的で非日常な場所から生まれる、純粋な愛～〈お節介チャラお兄さん〉【ステラプレイヤー限定版】",
         "title_raw": "Dramatical Eden ～刺激的で非日常な場所から生まれる、純粋な愛～〈お節介チャラお兄さん〉(CV：猿飛総司)【ステラプレイヤー限定版】",
         "circle": "Cranberry",
@@ -199,16 +267,17 @@
         ],
         "link": "https://www.stellaplayer.jp/product/2048",
         "product_id": "2048",
-        "prev_rank": null,
+        "prev_rank": 5,
         "history": [
           {
             "date": "2026-06-24",
-            "rank": 5
+            "rank": 7
           }
-        ]
+        ],
+        "is_new": false
       },
       {
-        "rank": 6,
+        "rank": 8,
         "title": "気持ちいい×××を教えて……？ -先輩彼氏のとろける愛撫-【ステラプレイヤー限定版】",
         "title_raw": "気持ちいい×××を教えて……？ -先輩彼氏のとろける愛撫-(CV：土門熱)【ステラプレイヤー限定版】",
         "circle": "Cranberry",
@@ -224,16 +293,17 @@
         ],
         "link": "https://www.stellaplayer.jp/product/2136",
         "product_id": "2136",
-        "prev_rank": null,
+        "prev_rank": 6,
         "history": [
           {
             "date": "2026-06-24",
-            "rank": 6
+            "rank": 8
           }
-        ]
+        ],
+        "is_new": false
       },
       {
-        "rank": 7,
+        "rank": 9,
         "title": "大人の初めて～エッチってこんなに嬉しくて気持ちよくなるの？～【ステラプレイヤー限定版】",
         "title_raw": "大人の初めて～エッチってこんなに嬉しくて気持ちよくなるの？～(CV：土門熱)【ステラプレイヤー限定版】",
         "circle": "Cranberry",
@@ -248,7 +318,7 @@
         ],
         "link": "https://www.stellaplayer.jp/product/2254",
         "product_id": "2254",
-        "prev_rank": null,
+        "prev_rank": 7,
         "history": [
           {
             "date": "2026-06-22",
@@ -260,52 +330,40 @@
           },
           {
             "date": "2026-06-24",
-            "rank": 7
+            "rank": 9
           }
-        ]
+        ],
+        "is_new": false
       },
       {
-        "rank": 8,
-        "title": "ポリネシアン・ラヴ 永森伊央【ステラワース限定版】",
-        "title_raw": "ポリネシアン・ラヴ 永森伊央(CV：土門熱)【ステラワース限定版】",
-        "circle": "バニラレシピ",
-        "cv": "土門熱",
-        "img": "https://api.stellaplayer.jp/media/11745/conversions/65b58862-aeb9-459d-a4fb-64f5d2301280-800x800_png.png",
-        "release_date": "2025-10-15",
+        "rank": 10,
+        "title": "SWEET×SWEET 槙大河【ステラワース限定版】",
+        "title_raw": "SWEET×SWEET 槙大河(CV：広山和重)【ステラワース限定版】",
+        "circle": "アプリコット",
+        "cv": "広山和重",
+        "img": "https://api.stellaplayer.jp/media/11498/conversions/339734c2-a478-4c0f-8726-4b2b85c99976-800x800_png.png",
+        "release_date": "2025-09-12",
         "tags": [
-          "幼なじみ",
-          "年上",
-          "夫",
-          "旦那",
+          "恋人",
           "ラブラブ",
-          "イチャイチャ",
-          "溺愛",
-          "初体験"
+          "あまあま",
+          "オフィス",
+          "職場",
+          "日常"
         ],
-        "link": "https://www.stellaplayer.jp/product/2433",
-        "product_id": "2433",
+        "link": "https://www.stellaplayer.jp/product/2457",
+        "product_id": "2457",
         "prev_rank": null,
         "history": [
           {
-            "date": "2026-06-21",
-            "rank": 8
-          },
-          {
-            "date": "2026-06-22",
-            "rank": 21
-          },
-          {
-            "date": "2026-06-23",
-            "rank": 21
-          },
-          {
             "date": "2026-06-24",
-            "rank": 8
+            "rank": 10
           }
-        ]
+        ],
+        "is_new": false
       },
       {
-        "rank": 9,
+        "rank": 11,
         "title": "惑溺のアンドロマリウス ～Codename: Null～",
         "title_raw": "惑溺のアンドロマリウス ～Codename: Null～(CV：佐和真中)",
         "circle": "ステラワース",
@@ -318,7 +376,7 @@
         ],
         "link": "https://www.stellaplayer.jp/product/2706",
         "product_id": "2706",
-        "prev_rank": null,
+        "prev_rank": 9,
         "history": [
           {
             "date": "2026-06-20",
@@ -338,12 +396,13 @@
           },
           {
             "date": "2026-06-24",
-            "rank": 9
+            "rank": 11
           }
-        ]
+        ],
+        "is_new": false
       },
       {
-        "rank": 10,
+        "rank": 12,
         "title": "【絶倫×耐久×ライバル同僚♡】Ｗｈｉｃｈ？《共通特典トラック付き》",
         "title_raw": "【絶倫×耐久×ライバル同僚♡】Ｗｈｉｃｈ？(CV：冬ノ熊肉)《共通特典トラック付き》",
         "circle": "Cranberry",
@@ -360,7 +419,7 @@
         ],
         "link": "https://www.stellaplayer.jp/product/2729",
         "product_id": "2729",
-        "prev_rank": null,
+        "prev_rank": 10,
         "history": [
           {
             "date": "2026-06-22",
@@ -372,12 +431,13 @@
           },
           {
             "date": "2026-06-24",
-            "rank": 10
+            "rank": 12
           }
-        ]
+        ],
+        "is_new": false
       },
       {
-        "rank": 11,
+        "rank": 13,
         "title": "【巨根×独占欲×優しい先輩♡】Ｗｈｉｃｈ？《共通特典トラック付き》",
         "title_raw": "【巨根×独占欲×優しい先輩♡】Ｗｈｉｃｈ？(CV：五日天峰)《共通特典トラック付き》",
         "circle": "Cranberry",
@@ -394,13 +454,14 @@
         ],
         "link": "https://www.stellaplayer.jp/product/2730",
         "product_id": "2730",
-        "prev_rank": null,
+        "prev_rank": 11,
         "history": [
           {
             "date": "2026-06-24",
-            "rank": 11
+            "rank": 13
           }
-        ]
+        ],
+        "is_new": false
       }
     ]
   }
