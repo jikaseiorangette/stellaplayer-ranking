@@ -268,6 +268,24 @@ def update_history(history, cat, items, today_str):
         history[cat][pid].append({"date": today_str, "rank": 21})  # 21 = 取得した20件から外れた＝圏外
         history[cat][pid].sort(key=lambda x: x["date"])
 
+    # ③ products.csvの全作品をhistory追跡対象に追加（未登録のidを圏外として初期登録）
+    import csv as csv_module
+    from pathlib import Path
+    csv_path = Path("data/products.csv")
+    if csv_path.exists():
+        with csv_path.open(encoding="utf-8-sig") as f:
+            all_ids = [row["id"] for row in csv_module.DictReader(f)]
+        for pid in all_ids:
+            if pid in today_ranked_ids:
+                continue
+            if pid not in history[cat]:
+                history[cat][pid] = []
+            existing_dates = {h.get("date") for h in history[cat][pid]}
+            if today_str in existing_dates:
+                continue
+            history[cat][pid].append({"date": today_str, "rank": 21})
+            history[cat][pid].sort(key=lambda x: x["date"])
+
 # ===== メイン =====
 
 def scrape(prev, products_csv, history, today_str):
